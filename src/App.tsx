@@ -1,35 +1,65 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useRef, useState } from 'react'
+import { Box, Button, TextField, Typography } from '@mui/material'
+import useFetch from './useFetch'
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+export default () => {
+  const {data, isPending, error, makeRequest} = useFetch(
+    //'https://google.com',
+    // 'https://jsonplaceholder.typicode.com/todos/1',
+    'https://us19.api.mailchimp.com/3.0/ping',
+    'GET'
   )
-}
+  const [apiKey, setApiKey] = useState('');
+  const apiRef = useRef();
 
-export default App
+  const onSubmit = () => {
+    setApiKey((apiRef.current as any)?.value ?? '')
+    makeRequest({
+      headers: {
+        mode: 'no-cors',
+        Authorization: `Basic ${btoa(`anystring:${apiKey}`)}` 
+      }
+    })
+  }
+
+  const Labeled = ({label, children} : {label: any, children: any}) => <Box display='flex' flexDirection='column'>
+      <Typography>{label}</Typography>
+      {children}
+    </Box>
+
+  const Header = () => <Box display='flex' flexDirection='row' gap={2} sx={{margin: 'auto', maxWidth: '500px'}}>
+    <Box sx={{
+      width: '100px',
+      height: '100px',
+      borderRadius: '50%',
+      my: 'auto',
+      backgroundImage: 'url(https://cdn.icon-icons.com/icons2/2407/PNG/512/mailchimp_icon_146054.png)',
+      backgroundPosition: 'center center',
+      backgroundSize: '150px',
+      flexGrow: '0',
+      flexShrink: '0',
+    }}/>
+    <Typography variant='h3' textAlign='center'>Equal Vote Mailchimp Helper</Typography>
+  </Box>
+
+  return <Box display='flex' flexDirection='column' width='100%'>
+    <Header/>
+    <Box display='flex' flexDirection='column' sx={{
+      width: '100%',
+      maxWidth: '500px',
+      margin: 'auto',
+      my: 4,
+      gap: 3,
+    }}>
+      <Labeled label='API KEY'>
+        <TextField inputRef={apiRef} defaultValue={apiKey}/>
+      </Labeled>
+      <Button variant='contained' onClick={onSubmit} sx={{width: '200px'}}>Ping</Button>
+      <Labeled label='RESPONSE'>
+        <TextField disabled sx={{backgroundColor: error == null ? 'unset' : '#FF8888'}} value={
+          isPending? '(pending)' : (error ?? (data==null? '' : JSON.stringify(data)))}
+        />
+      </Labeled>
+    </Box>
+  </Box>
+}
