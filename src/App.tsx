@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
 import { Box, Button, TextField, Typography } from '@mui/material'
 import useFetch from './useFetch'
+// const mailchimp = require("@mailchimp/mailchimp_marketing");
+
 
 export default () => {
   const {data, isPending, error, makeRequest} = useFetch(
@@ -9,16 +11,24 @@ export default () => {
     'https://us19.api.mailchimp.com/3.0/ping',
     'GET'
   )
+  
   const [apiKey, setApiKey] = useState('');
   const apiRef = useRef();
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     let key = (apiRef.current as any)?.value ?? '';
     setApiKey(key)
+    //mailchimp.setConfig({
+    //  apiKey: key,
+    //  server: 'us19',
+    //});
     console.log(key);
+    //const response = await mailchimp.ping.get();
+    //console.log(response);
     makeRequest({
       headers: {
-        //Authorization: `Basic ${btoa(`anystring:${key}`)}` 
+        //Authorization: `Bearer ${key}`,
+        Authorization: `Basic ${btoa(`anystring:${key}`)}`,
       }
     })
   }

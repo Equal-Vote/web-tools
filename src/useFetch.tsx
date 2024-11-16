@@ -17,22 +17,52 @@ const useFetch = <Message, Response>(url: string, method: 'GET' | 'POST' | 'PUT'
     const [isPending, setIsPending] = useState(false)
     const [error, setError] = useState<any>(null)
     const [data, setData] = useState<Response | null>(null)
+    console.log(url, method);
 
     const makeRequest = async ({body, headers} : {body?: Message, headers?: StringMap} ) => {
         console.log(body);
         setIsPending(true);
         try {
             console.log('fetch called')
-            const res = await fetch(url, {
-                method: method,
-                mode: 'no-cors', 
-                //headers: new Headers({
-                //    'Accept': 'application/json',
-                //    'Content-Type': 'application/json',
-                //    ...headers,
-                //}),
-                //body: body==undefined ? '' : JSON.stringify(body)
+            await fetch(
+                'https://us19.api.mailchimp.com/3.0/ping',
+                //'https://jsonplaceholder.typicode.com/todos/1',
+                {
+
+                    method: 'get',
+                    //mode: 'no-cors', 
+                    credentials: 'include',
+                    headers: new Headers(headers)
+                    //headers: new Headers({
+                    //    //Authorization: 'Bearer '//`Basic ${btoa(`anystring:${key}`)}` 
+                    //    //'Accept': 'application/json',
+                    //    //'Content-Type': 'application/json',
+                    //    //...headers,
+                    //}),
+                    //body: body==undefined ? '' : JSON.stringify(body)
+                }
+            ).then(res => {
+                console.log('hi')
+                console.log(res)
+                if(res.ok)return res.json()
+            }).then(json => {
+                console.log('json')
+                console.log(json)
             })
+            console.log('first fetch end')
+            const res = await fetch(
+                'https://us19.api.mailchimp.com/3.0/ping', {
+                    method: 'get',
+                    mode: 'no-cors', 
+                    credentials: 'same-origin',
+                    headers: new Headers({
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        //...headers,
+                    }),
+                    //body: body==undefined ? '' : JSON.stringify(body)
+                }
+            )
             console.log('done')
             console.log(res);
             if (!res.ok) {
