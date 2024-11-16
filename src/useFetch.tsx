@@ -19,18 +19,19 @@ const useFetch = <Message, Response>(url: string, method: 'GET' | 'POST' | 'PUT'
     const [data, setData] = useState<Response | null>(null)
 
     const makeRequest = async ({body, headers} : {body?: Message, headers?: StringMap} ) => {
+        console.log(body);
         setIsPending(true);
         try {
             console.log('fetch called')
             const res = await fetch(url, {
                 method: method,
                 mode: 'no-cors', 
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    ...headers,
-                },
-                //body: JSON.stringify(body)
+                //headers: new Headers({
+                //    'Accept': 'application/json',
+                //    'Content-Type': 'application/json',
+                //    ...headers,
+                //}),
+                //body: body==undefined ? '' : JSON.stringify(body)
             })
             console.log('done')
             console.log(res);

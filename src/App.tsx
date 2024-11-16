@@ -13,11 +13,12 @@ export default () => {
   const apiRef = useRef();
 
   const onSubmit = () => {
-    setApiKey((apiRef.current as any)?.value ?? '')
+    let key = (apiRef.current as any)?.value ?? '';
+    setApiKey(key)
+    console.log(key);
     makeRequest({
       headers: {
-        mode: 'no-cors',
-        Authorization: `Basic ${btoa(`anystring:${apiKey}`)}` 
+        //Authorization: `Basic ${btoa(`anystring:${key}`)}` 
       }
     })
   }
