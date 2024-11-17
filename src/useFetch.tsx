@@ -17,54 +17,24 @@ const useFetch = <Message, Response>(url: string, method: 'GET' | 'POST' | 'PUT'
     const [isPending, setIsPending] = useState(false)
     const [error, setError] = useState<any>(null)
     const [data, setData] = useState<Response | null>(null)
-    console.log(url, method);
 
     const makeRequest = async ({body, headers} : {body?: Message, headers?: StringMap} ) => {
-        console.log(body);
         setIsPending(true);
         try {
-            console.log('fetch called')
-            await fetch(
-                'https://us19.api.mailchimp.com/3.0/ping',
-                //'https://jsonplaceholder.typicode.com/todos/1',
-                {
-
-                    method: 'get',
-                    //mode: 'no-cors', 
-                    credentials: 'include',
-                    headers: new Headers(headers)
-                    //headers: new Headers({
-                    //    //Authorization: 'Bearer '//`Basic ${btoa(`anystring:${key}`)}` 
-                    //    //'Accept': 'application/json',
-                    //    //'Content-Type': 'application/json',
-                    //    //...headers,
-                    //}),
-                    //body: body==undefined ? '' : JSON.stringify(body)
-                }
-            ).then(res => {
-                console.log('hi')
-                console.log(res)
-                if(res.ok)return res.json()
-            }).then(json => {
-                console.log('json')
-                console.log(json)
-            })
-            console.log('first fetch end')
             const res = await fetch(
-                'https://us19.api.mailchimp.com/3.0/ping', {
-                    method: 'get',
-                    mode: 'no-cors', 
-                    credentials: 'same-origin',
+                // launched cors-anywhere server on heroku
+                // https://github.com/Rob--W/cors-anywhere
+                `https://thawing-lowlands-28251-6bae9d7d987a.herokuapp.com/${url}`,
+                {
+                    method: method,
                     headers: new Headers({
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
-                        //...headers,
+                        ...headers,
                     }),
-                    //body: body==undefined ? '' : JSON.stringify(body)
+                    //body: body ?? ''
                 }
             )
-            console.log('done')
-            console.log(res);
             if (!res.ok) {
                 var contentType = res.headers.get('content-type')
 
