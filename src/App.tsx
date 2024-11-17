@@ -1,26 +1,11 @@
 import { useRef, useState } from 'react'
 import { Box, Button, TextField, Typography } from '@mui/material'
-import useFetch from './useFetch'
-
 
 const MAILCHIMP = 'https://us19.api.mailchimp.com/3.0'
 const MEMBER_API = `${MAILCHIMP}/lists/ac99b517dc/members/__MEMBER__`
 const COFFEE_MEMBERS_API = `${MAILCHIMP}/lists/ac99b517dc/segments/26023824/members`
 
-type StringMap = {[key: string]: string};
-
 export default () => {
-  /*const {data, isPending, error, makeRequest} = useFetch(
-    //'https://us19.api.mailchimp.com/3.0/ping',
-    //'https://us19.api.mailchimp.com/3.0/lists',
-    //'https://us19.api.mailchimp.com/3.0/lists/ac99b517dc/members/d025586e03a7105bceb0e3a657445534',
-    'https://us19.api.mailchimp.com/3.0/lists/ac99b517dc/members/apc1993@gmail.com',
-    'GET'
-  )*/
-  //curl -X GET \
-  //'https://us19.api.mailchimp.com/3.0/search-members?query=<SOME_STRING_VALUE>' \
-  //--user "anystring:${apikey}"'
-
   const info = useRef({
     key: '',
     pairings: '',
