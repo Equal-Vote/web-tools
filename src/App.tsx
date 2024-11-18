@@ -59,14 +59,14 @@ export default () => {
       console.log(`Found contact ${email}`, data)
       data.merge_fields.COFFEEPAIR = pairing;
       req(
-        MEMBER_API.replace('__MEMBER__', email),
+        MEMBER_API.replace('__MEMBER__', email)+'?skip_merge_validation=true',
         'PUT',
         JSON.stringify(data)
       )
       .then(res => res ? res.json() : (new Response()).json())
       .then(data => {
         if(data['status'] == 400 || data['status'] == 404){
-          setError(`Couldn't find contact ${email} in mailchimp`)
+          setError(`There was an issue setting the pairing for ${email}`)
         }
         console.log(`set pair: ${email} and ${pairing}`, data)
       })
@@ -112,8 +112,6 @@ export default () => {
       console.log('end', i, num_members);
     }
   }
-
-  
 
   const parseCSV = (str: string) => {
     const lines = str.split('\n');
