@@ -51,20 +51,25 @@ export default () => {
       MEMBER_API.replace('__MEMBER__', email),
       'GET',
     )
-    .then(res => res.json())
+    .then(res => res ? res.json() : (new Response()).json())
     .then(data => {
-      if(data['status'] == 404){
+      if(data['status'] == 400 || data['status'] == 404){
         setError(`Couldn't find contact ${email} in mailchimp`)
       }
-      console.log(data)
+      console.log(`Found contact ${email}`, data)
       data.merge_fields.COFFEEPAIR = pairing;
       req(
         MEMBER_API.replace('__MEMBER__', email),
         'PUT',
         JSON.stringify(data)
-      ).then(res => res.json()).then(data => 
-        console.log(`set pair: ${email} and ${pairing}`, data)
       )
+      .then(res => res ? res.json() : (new Response()).json())
+      .then(data => {
+        if(data['status'] == 400 || data['status'] == 404){
+          setError(`Couldn't find contact ${email} in mailchimp`)
+        }
+        console.log(`set pair: ${email} and ${pairing}`, data)
+      })
     })
   }
 
@@ -74,7 +79,7 @@ export default () => {
         MEMBER_API.replace('__MEMBER__', email),
         'GET',
       )
-      .then(res => res.json())
+      .then(res => res ? res.json() : (new Response()).json())
       .then(data => {
         if(data['status'] == 404){
           setError(`Couldn't find contact ${email} in mailchimp`)
@@ -84,7 +89,9 @@ export default () => {
           MEMBER_API.replace('__MEMBER__', email),
           'PUT',
           JSON.stringify(data)
-        ).then(res => res.json()).then(data => 
+        )
+        .then(res => res ? res.json() : (new Response()).json())
+        .then(data => 
           console.log(`cleared pair: ${email}`, data)
         )
       })
@@ -95,7 +102,7 @@ export default () => {
     while(num_members > 0 && i < 20){
       console.log('clearing', i++);
       await req(COFFEE_MEMBERS_API, 'GET')
-        .then(res => res.json())
+        .then(res => res ? res.json() : (new Response()).json())
         .then(async data => {
           num_members = data.members.length;
           await Promise.all(
@@ -104,7 +111,6 @@ export default () => {
         });
       console.log('end', i, num_members);
     }
-    console.log('all members cleared');
   }
 
   
@@ -122,7 +128,7 @@ export default () => {
     setResultState('pending');
     info.current.key = v(apiRef);;
 
-    clearCoffeeMembers(); 
+    await clearCoffeeMembers(); 
 
     info.current.pairings = v(pairingRef);;
     info.current.contacts = v(contactsRef);;
