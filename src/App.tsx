@@ -47,7 +47,7 @@ export default () => {
   }
 
   const setPairing = async (email: string, pairing: string) => {
-    return req(
+    return await req(
       MEMBER_API.replace('__MEMBER__', email),
       'GET',
     )
