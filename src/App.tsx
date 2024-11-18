@@ -86,7 +86,7 @@ export default () => {
         }
         data.merge_fields.COFFEEPAIR = '';
         req(
-          MEMBER_API.replace('__MEMBER__', email),
+          MEMBER_API.replace('__MEMBER__', email)+'?skip_merge_validation=true',
           'PUT',
           JSON.stringify(data)
         )
