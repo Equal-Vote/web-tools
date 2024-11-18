@@ -46,8 +46,8 @@ export default () => {
     ).catch(e => setError(e))
   }
 
-  const setPairing = async (email: string, pairing: string) => {
-    return await req(
+  const setPairing = (email: string, pairing: string) => {
+    return req(
       MEMBER_API.replace('__MEMBER__', email),
       'GET',
     )
@@ -74,7 +74,7 @@ export default () => {
   }
 
   const clearCoffeeMembers = async () => {
-    const clearPairing = async (email: string) => {
+    const clearPairing = (email: string) => {
       return req(
         MEMBER_API.replace('__MEMBER__', email),
         'GET',
@@ -124,12 +124,12 @@ export default () => {
   const onSubmit = async () => {
     setResult('pending...');
     setResultState('pending');
-    info.current.key = v(apiRef);;
+    info.current.key = v(apiRef);
+    info.current.pairings = v(pairingRef);
+    info.current.contacts = v(contactsRef);
 
     await clearCoffeeMembers(); 
 
-    info.current.pairings = v(pairingRef);;
-    info.current.contacts = v(contactsRef);;
     let pairings = parseCSV(info.current.pairings);
     let contacts = Object.fromEntries(parseCSV(info.current.contacts).map(row => [row['Members'], row]));
     let reqs: Promise<void>[] = [];
@@ -145,6 +145,7 @@ export default () => {
         contacts[item['Name']]['Email Blurb'],
       ))
     })
+    console.log('pairing reqs', pairings.length, reqs.length)
     await Promise.all(reqs).then(() => {
       console.log('DONE')
       if(resultState != 'fail') setSuccess()
