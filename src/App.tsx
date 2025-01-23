@@ -8,7 +8,7 @@ import { useCookie } from './useCookie'
 export default () => {
     const tools = ['Coffee Pairing', 'Contact Export']
     const [tool, setTool] = useCookie('recent_tool', tools[0]);
-    const [result, setResult] = useState('');
+    const [result, setResult] = useState([] as string[]);
     const [resultState, setResultState] = useState<'fail'|'success'|'pending'>('pending');
     const [apiKey, setApiKey] = useCookie('mailchimp_api_key', '');
     const colors = {
@@ -19,16 +19,16 @@ export default () => {
 
     const state: StateReporter = {
         error: (err: string) => {
-            setResult(err);
+            setResult((r) => [...r, err]);
             setResultState('fail');
         },
         success: () => {
             if(resultState == 'fail') return;
-            setResult('Sucess!');
+            setResult((r) => ['Sucess!', ...r]);
             setResultState('success');
         },
-        pending: () => {
-            setResult('pending...');
+        pending: (msg?: string) => {
+            setResult((r) =>  [(msg? msg : 'pending') + '...', ...r]);
             setResultState('pending');
         }
     }
@@ -91,7 +91,10 @@ export default () => {
             <Divider/>
 
             <Labeled label='RESPONSE'>
-                <TextField disabled multiline rows={2} sx={{backgroundColor: colors[resultState]}} value={result}/>
+                <Box sx={{overflow: 'auto', p: 2, backgroundColor: colors[resultState], display: 'flex', flexDirection: 'column-reverse', height: '150px', width: '100%', border: '2px solid gray', borderRadius: '5px'}}>
+                    {result.map((row, i) => <Typography component='p' key={i}>{row}</Typography>)}
+                    
+                </Box>
             </Labeled>
         </Box>
     </Box>
