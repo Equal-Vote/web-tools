@@ -1,162 +1,49 @@
 import { useRef, useState } from 'react'
-import { Box, Button, TextField, Typography } from '@mui/material'
-
-const MAILCHIMP = 'https://us19.api.mailchimp.com/3.0'
-const MEMBER_API = `${MAILCHIMP}/lists/ac99b517dc/members/__MEMBER__`
-const COFFEE_MEMBERS_API = `${MAILCHIMP}/lists/ac99b517dc/segments/26023824/members`
+import { Box, Divider, MenuItem, Select, TextField, Typography } from '@mui/material'
+import { Labeled, v, ReqFunc, StateReporter } from './util'
+import CoffeePairing from './CoffeePairing'
 
 export default () => {
-  const info = useRef({
-    key: '',
-    pairings: '',
-    contacts: '',
-  });
+  const tools = ['Coffee Pairing', 'Contact Export']
+  const [tool, setTool] = useState(tools[0]);
   const [result, setResult] = useState('');
   const [resultState, setResultState] = useState<'fail'|'success'|'pending'>('pending');
-  const apiRef = useRef();
-  const pairingRef = useRef();
-  const contactsRef = useRef();
+  const [apiKey, setApiKey] = useState('');
   const colors = {
     'fail': '#FF8888',
     'success': '#88FF88',
     'pending': 'unset'
   }
 
-  const setError = (err: string) => {
-    setResult(err);
-    setResultState('fail');
+  const state: StateReporter = {
+    error: (err: string) => {
+      setResult(err);
+      setResultState('fail');
+    },
+    success: () => {
+      if(resultState == 'fail') return;
+      setResult('Sucess!');
+      setResultState('success');
+    },
+    pending: () => {
+      setResult('pending...');
+      setResultState('pending');
+    }
   }
 
-  const setSuccess = () => {
-    setResult('Sucess!');
-    setResultState('success');
-  }
-
-  const req = (url: string, method: string, body?: string) => {
+  const req: ReqFunc = (url: string, method: string, body?: string) => {
     return fetch(
-      `https://thawing-lowlands-28251-6bae9d7d987a.herokuapp.com/${url}`, {
+        `https://thawing-lowlands-28251-6bae9d7d987a.herokuapp.com/${url}`, {
         method: method,
         headers: new Headers({
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${btoa(`anystring:${info.current.key}`)}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Basic ${btoa(`anystring:${apiKey}`)}`,
         }),
         body: body ?? undefined
-      }
-    ).catch(e => setError(e))
-  }
-
-  const setPairing = (email: string, pairing: string) => {
-    return req(
-      MEMBER_API.replace('__MEMBER__', email),
-      'GET',
-    )
-    .then(res => res ? res.json() : (new Response()).json())
-    .then(data => {
-      if(data['status'] == 400 || data['status'] == 404){
-        setError(`Couldn't find contact ${email} in mailchimp`)
-      }
-      console.log(`Found contact ${email}`, data)
-      data.merge_fields.COFFEEPAIR = pairing;
-      req(
-        MEMBER_API.replace('__MEMBER__', email)+'?skip_merge_validation=true',
-        'PUT',
-        JSON.stringify(data)
-      )
-      .then(res => res ? res.json() : (new Response()).json())
-      .then(data => {
-        if(data['status'] == 400 || data['status'] == 404){
-          setError(`There was an issue setting the pairing for ${email}`)
         }
-        console.log(`set pair: ${email} and ${pairing}`, data)
-      })
-    })
-  }
-
-  const clearCoffeeMembers = async () => {
-    const clearPairing = (email: string) => {
-      return req(
-        MEMBER_API.replace('__MEMBER__', email),
-        'GET',
-      )
-      .then(res => res ? res.json() : (new Response()).json())
-      .then(data => {
-        if(data['status'] == 404){
-          setError(`Couldn't find contact ${email} in mailchimp`)
-        }
-        data.merge_fields.COFFEEPAIR = '';
-        req(
-          MEMBER_API.replace('__MEMBER__', email)+'?skip_merge_validation=true',
-          'PUT',
-          JSON.stringify(data)
-        )
-        .then(res => res ? res.json() : (new Response()).json())
-        .then(data => 
-          console.log(`cleared pair: ${email}`, data)
-        )
-      })
-    }
-
-    let num_members = 1
-    let i = 0; 
-    while(num_members > 0 && i < 20){
-      console.log('clearing', i++);
-      await req(COFFEE_MEMBERS_API, 'GET')
-        .then(res => res ? res.json() : (new Response()).json())
-        .then(async data => {
-          num_members = data.members.length;
-          await Promise.all(
-            data.members.map((member:any) => clearPairing(member.email_address))
-          );
-        });
-      console.log('end', i, num_members);
-    }
-  }
-
-  const parseCSV = (str: string) => {
-    const lines = str.split('\n');
-    const keys : string[] = (lines.shift() ?? '').split('\t');
-    return lines.map((line:string) => Object.fromEntries(line.split('\t').map((value, i) => [keys[i], value])))
-  }
-
-  const v = (r: any) => (r.current as any)?.value ?? '';
-
-  const onSubmit = async () => {
-    setResult('pending...');
-    setResultState('pending');
-    info.current.key = v(apiRef);
-    info.current.pairings = v(pairingRef);
-    info.current.contacts = v(contactsRef);
-
-    await clearCoffeeMembers(); 
-
-    let pairings = parseCSV(info.current.pairings);
-    let contacts = Object.fromEntries(parseCSV(info.current.contacts).map(row => [row['Members'], row]));
-    let reqs: Promise<void>[] = [];
-    pairings.forEach(item => {
-      if(contacts[item['Name']] === undefined) setError(`'${item['Name']}' from ${JSON.stringify(item)} not in contacts`)
-      if(contacts[item['Partner Name']] === undefined) setError(`'${item['Partner Name']}' from ${JSON.stringify(item)} not in contacts.`)
-      reqs.push(setPairing(
-        contacts[item['Name']]['Email'],
-        contacts[item['Partner Name']]['Email Blurb'],
-      ))
-      reqs.push(setPairing(
-        contacts[item['Partner Name']]['Email'],
-        contacts[item['Name']]['Email Blurb'],
-      ))
-    })
-    console.log('pairing reqs', pairings.length, reqs.length)
-    await Promise.all(reqs).then(() => {
-      console.log('DONE')
-      if(resultState != 'fail') setSuccess()
-    });
-    console.log('THE END')
-  }
-
-  const Labeled = ({label, children} : {label: any, children: any}) => <Box display='flex' flexDirection='column'>
-      <Typography>{label}</Typography>
-      {children}
-    </Box>
+    ).catch(e => state.error(e))
+}
 
   const Header = () => <Box display='flex' flexDirection='row' gap={2} sx={{margin: 'auto', maxWidth: '500px'}}>
     <Box sx={{
@@ -183,15 +70,23 @@ export default () => {
       gap: 3,
     }}>
       <Labeled label='API KEY'>
-        <TextField type='password' inputRef={apiRef} defaultValue={info.current.key}/>
+        <TextField type='password' defaultValue={apiKey} onChange={(e) => setApiKey(e.target.value as string)}/>
       </Labeled>
-      <Labeled label='PAIRINGS'>
-        <TextField multiline rows={3} inputRef={pairingRef} defaultValue={info.current.pairings}/>
+      <Labeled label='Tool'>
+        <Select
+          value={tool}
+          onChange={(event) => setTool(event.target.value as string)}
+        >
+          {tools.map((tool,i) => <MenuItem key={i} value={tool}>{tool}</MenuItem>)}
+        </Select>
       </Labeled>
-      <Labeled label='CONTACTS'>
-        <TextField multiline rows={3} inputRef={contactsRef} defaultValue={info.current.contacts}/>
-      </Labeled>
-      <Button variant='contained' onClick={onSubmit} sx={{width: '200px'}}>Apply</Button>
+
+      <Divider/>
+
+      {tool == 'Coffee Pairing' && <CoffeePairing req={req} state={state}/>}
+
+      <Divider/>
+
       <Labeled label='RESPONSE'>
         <TextField disabled multiline rows={2} sx={{backgroundColor: colors[resultState]}} value={result}/>
       </Labeled>
