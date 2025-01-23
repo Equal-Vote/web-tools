@@ -1,8 +1,10 @@
 import { Box, Typography } from "@mui/material";
 
 
-export const MAILCHIMP = 'https://us19.api.mailchimp.com/3.0'
+const MAILCHIMP = 'https://us19.api.mailchimp.com/3.0'
 export const MEMBER_API = `${MAILCHIMP}/lists/ac99b517dc/members/__MEMBER__`
+export const COFFEE_MEMBERS_API = `${MAILCHIMP}/lists/ac99b517dc/segments/26023824/members`
+export const ALL_MEMBERS_API = `${MAILCHIMP}/lists/ac99b517dc/members?count=100`
 
 export type ReqFunc = (url: string, method: string, body?: string) => Promise<void | Response>;
 export type StateReporter = {error: Function, pending: Function, success: Function};

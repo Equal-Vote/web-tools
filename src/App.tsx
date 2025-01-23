@@ -1,14 +1,16 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { Box, Divider, MenuItem, Select, TextField, Typography } from '@mui/material'
-import { Labeled, v, ReqFunc, StateReporter } from './util'
+import { Labeled, ReqFunc, StateReporter } from './util'
 import CoffeePairing from './CoffeePairing'
+import ContactExport from './ContactExport'
+import { useCookie } from './useCookie'
 
 export default () => {
     const tools = ['Coffee Pairing', 'Contact Export']
-    const [tool, setTool] = useState(tools[0]);
+    const [tool, setTool] = useCookie('recent_tool', tools[0]);
     const [result, setResult] = useState('');
     const [resultState, setResultState] = useState<'fail'|'success'|'pending'>('pending');
-    const [apiKey, setApiKey] = useState('');
+    const [apiKey, setApiKey] = useCookie('mailchimp_api_key', '');
     const colors = {
         'fail': '#FF8888',
         'success': '#88FF88',
@@ -84,6 +86,7 @@ export default () => {
             <Divider/>
 
             {tool == 'Coffee Pairing' && <CoffeePairing req={req} state={state}/>}
+            {tool == 'Contact Export' && <ContactExport req={req} state={state}/>}
 
             <Divider/>
 

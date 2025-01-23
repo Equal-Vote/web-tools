@@ -1,8 +1,7 @@
 import { Button, TextField } from "@mui/material"
-import { Labeled, MAILCHIMP, MEMBER_API, ReqFunc, StateReporter, v } from "./util"
+import { COFFEE_MEMBERS_API, Labeled, MEMBER_API, ReqFunc, StateReporter, v } from "./util"
 import { useRef } from "react";
 
-const COFFEE_MEMBERS_API = `${MAILCHIMP}/lists/ac99b517dc/segments/26023824/members`
 
 export default ({req, state} : {req: ReqFunc, state: StateReporter}) => {
     const pairingRef = useRef();
