@@ -23,9 +23,10 @@ function getCookie(name: string) {
     return null;
 }
 
-function cookieExists(name: string){
-    return getCookie(name) != null;
-}
+// unsed code creates an error in deployment for some reason :/
+//function cookieExists(name: string){
+//    return getCookie(name) != null;
+//}
 
 function deleteCookie(name: string) {
     document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
