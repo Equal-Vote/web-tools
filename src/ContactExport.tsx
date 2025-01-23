@@ -1,6 +1,7 @@
 import { Button } from "@mui/material";
 import { ALL_MEMBERS_API, MEMBER_API, ReqFunc, StateReporter, StringMap } from "./util";
 import { useState } from "react";
+import JSZip from "jszip";
 
 export default ({req, state} : {req: ReqFunc, state: StateReporter}) => {
     const [applyEnabled, setApplyEnabled] = useState(true);
@@ -89,13 +90,21 @@ export default ({req, state} : {req: ReqFunc, state: StateReporter}) => {
 
         state.success()
 
-        // Download File
-        const url = URL.createObjectURL(new Blob([
-            // TODO: figure out how to escape items with comma or quote
-            `${headers.map(h => h[CONTACT]).join(',')}\n${items.map((item) => headers.map(h => item[h[CONTACT]]).join(',')).join('\n')}`
-        ], {type: "text/csv"}));
+        // Zip and Download File
+        const zip = new JSZip();
+        const zipped = (file_name: string, items: StringMap[]) =>
+            zip.file(file_name, new Blob([
+                `${headers.map(h => h[CONTACT]).join(',')}\n${items.map((item) => headers.map(h => item[h[CONTACT]]).join(',')).join('\n')}`
+            ], {type: 'text/csv'}));
+        zipped('all_contacts.csv', items);
+        zipped('ohio_contacts.csv', items.filter(item => item.state == 'OH'));
+        zipped('oregon_contacts.csv', items.filter(item => item.state == 'OR'));
+        zipped('california_contacts.csv', items.filter(item => item.state == 'CA'));
+        zipped('georgia_contacts.csv', items.filter(item => item.state == 'GA'));
+        zipped('utah_contacts.csv', items.filter(item => item.state == 'UT'));
+        const url = URL.createObjectURL(await zip.generateAsync({type: 'blob'}));
         const link = document.createElement("a");
-        link.download = "contacts.csv";
+        link.download = "contacts.zip";
         link.href = url;
         link.click();
     }

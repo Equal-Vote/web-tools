@@ -2,12 +2,12 @@
   "name": "mailchimp",
   "private": true,
   "version": "0.0.0",
-	"homepage": "https://Equal-Vote.github.io/mailchimp",
+  "homepage": "https://Equal-Vote.github.io/mailchimp",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "predeploy" : "npm run build",
-		"deploy": "gh-pages -d dist",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.13.0",
     "@mui/material": "^6.1.7",
     "gh-pages": "^6.2.0",
+    "jszip": "^3.10.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
