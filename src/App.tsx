@@ -28,7 +28,11 @@ export default () => {
             setResultState('success');
         },
         pending: (msg?: string) => {
-            setResult((r) =>  [(msg? msg : 'pending') + '...', ...r]);
+            if(msg){
+                setResult((r) => [msg  + '...', ...r]);
+            }else{
+                setResult(['pending...'])
+            }
             setResultState('pending');
         }
     }
