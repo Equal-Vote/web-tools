@@ -1,11 +1,11 @@
-import { Box, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import useFetch from "./useFetch";
 import { useEffect } from "react";
 
 export default () => {
     const [params] = useSearchParams();
-    const { data, isPending, error, makeRequest: fetchEvents } = useFetch(
+    const { data, isPending, makeRequest: fetchEvents } = useFetch(
         'https://thawing-lowlands-28251-6bae9d7d987a.herokuapp.com/https://starvoting.org/events',
         'get', 
     )
@@ -13,7 +13,6 @@ export default () => {
     useEffect(() => {fetchEvents()}, [])
 
     //http://localhost:5173/mailchimp/event_finder?prefix=ca_call
-    let matchedUrl = ''
     if(isPending || !params.get('prefix')){
         return <Typography>{params.get('prefix') ? `finding ${params.get('prefix')}...` : 'No prefix found'}</Typography>        
     }else{

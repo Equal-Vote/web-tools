@@ -12,7 +12,7 @@ import { useState } from "react";
 //  error: any | null, null by default until request error 
 //  makeRequest: (MyRequest) => Promise<ApiResponse|false>, if request errors response with false
 // }
-const useFetch = <Message, Response>(url: string, method: 'get' | 'post' | 'put' | 'delete', headers?: Object) => {
+const useFetch = <Message, Response>(url: string, method: 'get' | 'post' | 'put' | 'delete') => {
     const [isPending, setIsPending] = useState(false)
     const [error, setError] = useState<any>(null)
     const [data, setData] = useState<string | null>(null)
@@ -33,8 +33,8 @@ const useFetch = <Message, Response>(url: string, method: 'get' | 'post' | 'put'
                 var contentType = res.headers.get('content-type')
 
                 if (contentType && contentType.indexOf('application/json') !== -1) {
-                    const data = await res.text();
-                    throw Error(`Error making request: ${res.status.toString()}: ${data.error}`)
+                    //const data = await res.text();
+                    //throw Error(`Error making request: ${res.status.toString()}: ${data.error}`)
                 } else {
                     throw Error(`Error making request: ${res.status.toString()}`)
                 }
