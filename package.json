@@ -1,8 +1,8 @@
 {
-  "name": "mailchimp",
+  "name": "web-tools",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://Equal-Vote.github.io/mailchimp",
+  "homepage": "https://Equal-Vote.github.io/web-tools",
   "type": "module",
   "scripts": {
     "dev": "vite",

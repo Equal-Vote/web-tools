@@ -10,7 +10,8 @@ export default () => {
     const [tool, setTool] = useCookie('recent_tool', tools[0]);
     const [result, setResult] = useState([] as string[]);
     const [resultState, setResultState] = useState<'fail'|'success'|'pending'>('pending');
-    const [apiKey, setApiKey] = useCookie('mailchimp_api_key', '');
+    const [mailchimpKey, setMailchimpKey] = useCookie('mailchimp_api_key', '');
+    const [nationBuilderKey, setNationBuilderKey] = useCookie('mailchimp_api_key', '');
     const colors = {
         'fail': '#FF8888',
         'success': '#88FF88',
@@ -57,13 +58,13 @@ export default () => {
             height: '100px',
             borderRadius: '50%',
             my: 'auto',
-            backgroundImage: 'url(https://cdn.icon-icons.com/icons2/2407/PNG/512/mailchimp_icon_146054.png)',
+            backgroundImage: 'url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgNGe18hYP39IQTAd3h0CwupcSMat_iplgGA&s)',
             backgroundPosition: 'center center',
-            backgroundSize: '150px',
+            backgroundSize: '100px',
             flexGrow: '0',
             flexShrink: '0',
         }}/>
-        <Typography variant='h3' textAlign='center'>Equal Vote Mailchimp Helper</Typography>
+        <Typography variant='h3' textAlign='center'>Equal Vote<br/>Web Tools</Typography>
     </Box>
 
     return <Box display='flex' flexDirection='column' width='100%'>
@@ -75,8 +76,11 @@ export default () => {
             my: 4,
             gap: 3,
         }}>
-            <Labeled label='API KEY'>
-                <TextField type='password' defaultValue={apiKey} onChange={(e) => setApiKey(e.target.value as string)}/>
+            <Labeled label='MAILCHIMP KEY'>
+                <TextField type='password' defaultValue={mailchimpKey} onChange={(e) => setMailchimpKey(e.target.value as string)}/>
+            </Labeled>
+            <Labeled label='NATIONBUILDER KEY'>
+                <TextField type='password' defaultValue={nationBuilderKey} onChange={(e) => setNationBuilderKey(e.target.value as string)}/>
             </Labeled>
             <Labeled label='Tool'>
                 <Select

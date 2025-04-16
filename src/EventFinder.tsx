@@ -12,7 +12,7 @@ export default () => {
 
     useEffect(() => {fetchEvents()}, [])
 
-    //http://localhost:5173/mailchimp/event_finder?prefix=ca_call
+    //http://localhost:5173/web-tools/event_finder?prefix=ca_call
     if(isPending || !params.get('prefix')){
         return <Typography>{params.get('prefix') ? `finding ${params.get('prefix')}...` : 'No prefix found'}</Typography>        
     }else{
