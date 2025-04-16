@@ -55,6 +55,7 @@ export default ({req, state} : {req: ReqFunc, state: StateReporter}) => {
             state.pending(`${items.length}/${totalCount}`)
             prevLength = items.length;
             await req(
+                'mailchimp',
                 ALL_MEMBERS_API
                     .replace('__OFFSET__', ''+items.length)
                     .replace('__COUNT__', ''+Math.min(LIMIT,500)),

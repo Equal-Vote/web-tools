@@ -11,7 +11,7 @@ export default () => {
     const [result, setResult] = useState([] as string[]);
     const [resultState, setResultState] = useState<'fail'|'success'|'pending'>('pending');
     const [mailchimpKey, setMailchimpKey] = useCookie('mailchimp_api_key', '');
-    const [nationBuilderKey, setNationBuilderKey] = useCookie('mailchimp_api_key', '');
+    const [nationBuilderKey, setNationBuilderKey] = useCookie('nationbuilder_api_key', '');
     const colors = {
         'fail': '#FF8888',
         'success': '#88FF88',
@@ -38,17 +38,22 @@ export default () => {
         }
     }
 
-    const req: ReqFunc = (url: string, method: string, body?: string) => {
+    const keys = {
+        mailchimp: mailchimpKey,
+        nationbuilder: nationBuilderKey,
+    }
+
+    const req: ReqFunc = (keyName: 'mailchimp'|'nationbuilder', url: string, method: string, body?: string) => {
         return fetch(
-                `https://thawing-lowlands-28251-6bae9d7d987a.herokuapp.com/${url}`, {
+            `https://thawing-lowlands-28251-6bae9d7d987a.herokuapp.com/${url}`, {
                 method: method,
                 headers: new Headers({
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'Authorization': `Basic ${btoa(`anystring:${apiKey}`)}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Basic ${btoa(`anystring:${keys[keyName]}`)}`,
                 }),
                 body: body ?? undefined
-                }
+            }
         ).catch(e => state.error(e))
     }
 

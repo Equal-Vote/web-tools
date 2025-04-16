@@ -6,7 +6,7 @@ export const MEMBER_API = `${MAILCHIMP}/lists/ac99b517dc/members/__MEMBER__`
 export const COFFEE_MEMBERS_API = `${MAILCHIMP}/lists/ac99b517dc/segments/26023824/members`
 export const ALL_MEMBERS_API = `${MAILCHIMP}/lists/ac99b517dc/members?count=__COUNT__&offset=__OFFSET__`
 
-export type ReqFunc = (url: string, method: string, body?: string) => Promise<void | Response>;
+export type ReqFunc = (keyName: 'mailchimp' | 'nationbuilder', url: string, method: string, body?: string) => Promise<void | Response>;
 export type StateReporter = {error: Function, pending: Function, success: Function};
 export type StringMap = {[key: string]: string};
 

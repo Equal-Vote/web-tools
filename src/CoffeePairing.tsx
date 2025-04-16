@@ -14,6 +14,7 @@ export default ({req, state} : {req: ReqFunc, state: StateReporter}) => {
 
     const setPairing = (email: string, pairing: string) => {
         return req(
+            'mailchimp',
             MEMBER_API.replace('__MEMBER__', email),
             'GET',
         )
@@ -25,6 +26,7 @@ export default ({req, state} : {req: ReqFunc, state: StateReporter}) => {
             console.log(`Found contact ${email}`, data)
             data.merge_fields.COFFEEPAIR = pairing;
             req(
+                'mailchimp',
                 MEMBER_API.replace('__MEMBER__', email)+'?skip_merge_validation=true',
                 'PUT',
                 JSON.stringify(data)
@@ -42,6 +44,7 @@ export default ({req, state} : {req: ReqFunc, state: StateReporter}) => {
     const clearCoffeeMembers = async () => {
         const clearPairing = (email: string) => {
             return req(
+                'mailchimp',
                 MEMBER_API.replace('__MEMBER__', email),
                 'GET',
             )
@@ -52,6 +55,7 @@ export default ({req, state} : {req: ReqFunc, state: StateReporter}) => {
                 }
                 data.merge_fields.COFFEEPAIR = '';
                 req(
+                    'mailchimp',
                     MEMBER_API.replace('__MEMBER__', email)+'?skip_merge_validation=true',
                     'PUT',
                     JSON.stringify(data)
@@ -67,7 +71,7 @@ export default ({req, state} : {req: ReqFunc, state: StateReporter}) => {
         let i = 0; 
         while(num_members > 0 && i < 20){
             console.log('clearing', i++);
-            await req(COFFEE_MEMBERS_API, 'GET')
+            await req('mailchimp', COFFEE_MEMBERS_API, 'GET')
                 .then(res => res ? res.json() : (new Response()).json())
                 .then(async data => {
                     num_members = data.members.length;
