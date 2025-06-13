@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Box, Divider, MenuItem, Select, TextField, Typography } from '@mui/material'
 import { Labeled, ReqFunc, StateReporter } from './util'
 import CoffeePairing from './CoffeePairing'
-import ContactExport from './ContactExport'
+import ContactExport from './ContactExportOld'
 import { useCookie } from './useCookie'
 
 export default () => {
