@@ -62,12 +62,14 @@ export default () => {
 				).then(
 						res => res ? res.json() : (new Response()).json()
 				).then(res => {
-						if(res.status !== 200){
+						if(res.status !== undefined && res.status !== 200){
+								console.log('error', res.status)
 								state.error(JSON.stringify(res))
 								return null;
 						}
 						return res;
 				}).catch(e => {
+					console.log('error')
 					state.error(e)
 					return null;
 				})
