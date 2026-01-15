@@ -20,7 +20,7 @@ export default () => {
 
     const state: StateReporter = {
         error: (err: string) => {
-            setResult((r) => [...r, err]);
+            setResult((r) => [err, ...r]);
             setResultState('fail');
         },
         success: () => {
@@ -43,22 +43,34 @@ export default () => {
         nationbuilder: nationBuilderKey,
     }
 
-    const req: ReqFunc = (keyName: 'mailchimp'|'nationbuilder', url: string, method: string, body?: string) => {
-        return fetch(
-            `https://thawing-lowlands-28251-6bae9d7d987a.herokuapp.com/${url}`, {
-                method: method,
-                headers: new Headers({
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': (() => {
-                        if(keyName == 'mailchimp') return `Basic ${btoa(`anystring:${keys[keyName]}`)}`
-                        if(keyName == 'nationbuilder') return `Bearer ${keys[keyName]}`
-                        return ''
-                    })(),
-                }),
-                body: body ?? undefined
-            }
-        ).catch(e => state.error(e))
+    const req: ReqFunc = async (keyName: 'mailchimp'|'nationbuilder', url: string, method: string, body?: string) => {
+				let found_error = false;
+				return fetch(
+						`https://thawing-lowlands-28251-6bae9d7d987a.herokuapp.com/${url}`, {
+								method: method,
+								headers: new Headers({
+										'Accept': 'application/json',
+										'Content-Type': 'application/json',
+										'Authorization': (() => {
+												if(keyName == 'mailchimp') return `Basic ${btoa(`anystring:${keys[keyName]}`)}`
+												if(keyName == 'nationbuilder') return `Bearer ${keys[keyName]}`
+												return ''
+										})(),
+								}),
+								body: body ?? undefined
+						}
+				).then(
+						res => res ? res.json() : (new Response()).json()
+				).then(res => {
+						if(res.status !== 200){
+								state.error(JSON.stringify(res))
+								return null;
+						}
+						return res;
+				}).catch(e => {
+					state.error(e)
+					return null;
+				})
     }
 
     const Header = () => <Box display='flex' flexDirection='row' gap={2} sx={{margin: 'auto', maxWidth: '500px'}}>

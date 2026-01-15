@@ -97,8 +97,8 @@ export default ({req, state} : {req: ReqFunc, state: StateReporter}) => {
                     .replace('__PAGE_SIZE__', ''+page_size),
                 'GET'
             )
-            .then(res => res ? res.json() : (new Response()).json())
             .then(obj => {
+								if(!data) return;
                 let data = obj.data
                 if(contact_id != '') data = [obj.data]
                 console.log(data)
