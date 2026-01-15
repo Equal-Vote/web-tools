@@ -96,6 +96,7 @@ export default ({req, state} : {req: ReqFunc, state: StateReporter}) => {
         let contacts = Object.fromEntries(parseCSV(info.current.contacts).map(row => [row['Members'], row]));
         let reqs: Promise<void>[] = [];
         pairings.forEach(item => {
+        console.log(item)
         if(contacts[item['Name']] === undefined) state.error(`'${item['Name']}' from ${JSON.stringify(item)} not in contacts`)
         if(contacts[item['Partner Name']] === undefined) state.error(`'${item['Partner Name']}' from ${JSON.stringify(item)} not in contacts.`)
         reqs.push(setPairing(
