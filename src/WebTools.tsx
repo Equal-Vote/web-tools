@@ -44,7 +44,6 @@ export default () => {
     }
 
     const req: ReqFunc = async (keyName: 'mailchimp'|'nationbuilder', url: string, method: string, body?: string) => {
-				let found_error = false;
 				return fetch(
 						`https://thawing-lowlands-28251-6bae9d7d987a.herokuapp.com/${url}`, {
 								method: method,

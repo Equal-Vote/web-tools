@@ -99,7 +99,9 @@ export default ({req, state} : {req: ReqFunc, state: StateReporter}) => {
             )
             .then(obj => {
 								if(!obj) return;
+                // @ts-ignore
                 let data = obj.data
+                // @ts-ignore
                 if(contact_id != '') data = [obj.data]
                 // @ts-ignore
                 items = [
