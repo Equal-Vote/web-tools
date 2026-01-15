@@ -50,6 +50,7 @@ export default () => {
                 headers: new Headers({
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
                     'Authorization': (() => {
                         if(keyName == 'mailchimp') return `Basic ${btoa(`anystring:${keys[keyName]}`)}`
                         if(keyName == 'nationbuilder') return `Bearer ${keys[keyName]}`
