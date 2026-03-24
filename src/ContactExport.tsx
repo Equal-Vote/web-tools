@@ -232,6 +232,7 @@ export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter,
         zipped('california_contacts.csv', items.filter(item => item.state == 'CA'));
         zipped('georgia_contacts.csv', items.filter(item => item.state == 'GA'));
         zipped('utah_contacts.csv', items.filter(item => item.state == 'UT'));
+        zipped('new_york_contacts.csv', items.filter(item => item.state == 'NY'));
         Object.entries(metroContacts).forEach(([zoneName, contacts]) => {
             zipped(`${zoneName}_contacts.csv`, contacts);
         });
