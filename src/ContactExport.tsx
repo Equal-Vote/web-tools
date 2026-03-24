@@ -11,7 +11,7 @@ const ZIP_CODES_API = 'https://api.zip-codes.com/ZipCodesAPI.svc/1.0/QuickGetZip
 const lookupCounty = async (zip: string, zipcodesKey: string): Promise<string> => {
     const cacheKey = `zip_county_${zip}`;
     const cached = sessionStorage.getItem(cacheKey);
-    if (cached !== null) return cached;
+    if (cached) return cached;
 
     const r = await fetch(`${PROXY}${ZIP_CODES_API}${zip}?key=${zipcodesKey}`, {
         headers: new Headers({ 'Accept': 'application/json' })
@@ -28,9 +28,10 @@ export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter,
 
     useEffect(() => {
         zipCacheRaw.trim().split('\n').slice(1).forEach(line => {
-            const [zip, county] = line.split('\t');
-            if (zip && county) {
-                sessionStorage.setItem(`zip_county_${zip.trim()}`, county.trim());
+            const [zip, countyRaw] = line.split('\t');
+            const county = countyRaw?.trim() ?? '';
+            if (zip?.trim() && county) {
+                sessionStorage.setItem(`zip_county_${zip.trim()}`, county);
             }
         });
     }, []);
