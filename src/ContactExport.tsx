@@ -129,7 +129,7 @@ export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter,
                 'GET'
             )
             .then(obj => {
-								if(!obj) return;
+                if(!obj) return;
                 // @ts-ignore
                 let data = obj.data
                 // @ts-ignore
@@ -173,16 +173,22 @@ export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter,
             }
         });
 
+        state.pending(`Found ${candidateZips.size} candidate zips with a zone prefix`)
+
         const uncachedZips = [...candidateZips].filter(zip => sessionStorage.getItem(`zip_county_${zip}`) === null);
+
+        state.pending(`Found ${uncachedZips.length} zips required an API call`)
 
         if (uncachedZips.length > 200) {
             state.error(`Too many uncached zip lookups required (${uncachedZips.length}), limit is 200`);
             return;
         }
+
         if (uncachedZips.length > 0 && !zipcodesKey) {
             state.error(`ZIP Codes API key required for ${uncachedZips.length} uncached zip codes`);
             return;
         }
+
         if (uncachedZips.length > 0) {
             state.pending('Looking up zip codes for metro areas...');
             // No duplicates: uncachedZips is derived from a Set, each zip appears exactly once
@@ -195,11 +201,15 @@ export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter,
             if (county) zipCountyMap[zip] = county;
         });
 
+        console.log(zipCountyMap)
+
         const metroContacts: { [zoneName: string]: typeof items } = {};
         zoneEntries.forEach(([zoneName, zone]) => {
             metroContacts[zoneName] = items.filter(item => {
                 const zip = item.zip;
+                console.log(item, zip, zipCountyMap[zip])
                 if (!zip || !zone.zip_prefixes.some(p => zip.startsWith(p))) return false;
+                console.log('include', zone.counties)
                 return zone.counties.includes(zipCountyMap[zip] ?? '');
             });
         });
