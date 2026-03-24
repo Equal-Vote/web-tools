@@ -174,12 +174,12 @@ export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter,
 
         state.pending(`Found ${candidateZips.size} candidate zips with a zone prefix`)
 
-        const uncachedZips = [...candidateZips].filter(zip => sessionStorage.getItem(`zip_county_${zip}`) === null);
+        const uncachedZips = [...candidateZips].filter(zip => !!sessionStorage.getItem(`zip_county_${zip}`));
 
         state.pending(`Found ${uncachedZips.length} zips required an API call`)
 
-        if (uncachedZips.length > 200) {
-            state.error(`Too many uncached zip lookups required (${uncachedZips.length}), limit is 200`);
+        if (uncachedZips.length > 250) {
+            state.error(`Too many uncached zip lookups required (${uncachedZips.length}), limit is 250`);
             return;
         }
 
@@ -204,8 +204,6 @@ export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter,
             const county = sessionStorage.getItem(`zip_county_${zip}`);
             if (county) zipCountyMap[zip] = county;
         });
-
-        console.log(zipCountyMap)
 
         const metroContacts: { [zoneName: string]: typeof items } = {};
         zoneEntries.forEach(([zoneName, zone]) => {
