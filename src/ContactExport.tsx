@@ -163,40 +163,46 @@ export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter,
         })
 
         // Metro zone filtering
-        const metroContacts: { [zoneName: string]: typeof items } = {};
-        if (zipcodesKey) {
-            const zoneEntries = Object.entries(zones) as [string, { zip_prefixes: string[], counties: string[] }][];
-            const candidateZips = new Set<string>();
-            for (const item of items) {
-                const zip = item.zip;
-                if (!zip) continue;
-                for (const [, zone] of zoneEntries) {
-                    if (zone.zip_prefixes.some(p => zip.startsWith(p))) {
-                        candidateZips.add(zip);
-                        break;
-                    }
-                }
+        const zoneEntries = Object.entries(zones) as [string, { zip_prefixes: string[], counties: string[] }][];
+        const candidateZips = new Set<string>();
+        items.forEach(item => {
+            const zip = item.zip;
+            if (!zip) return;
+            if (zoneEntries.some(([, zone]) => zone.zip_prefixes.some(p => zip.startsWith(p)))) {
+                candidateZips.add(zip);
             }
+        });
 
-            state.pending('Looking up zip codes for metro areas...');
-            const zipCountyMap: { [zip: string]: string } = {};
-            // No duplicates: candidateZips is a Set, so spreading it yields each zip exactly once
-            await Promise.all([...candidateZips].map(async zip => {
-                const county = await lookupCounty(zip, zipcodesKey);
-                if (county) zipCountyMap[zip] = county;
-            }));
+        const uncachedZips = [...candidateZips].filter(zip => sessionStorage.getItem(`zip_county_${zip}`) === null);
 
-            for (const [zoneName, zone] of zoneEntries) {
-                metroContacts[zoneName] = items.filter(item => {
-                    const zip = item.zip;
-                    if (!zip || !zone.zip_prefixes.some(p => zip.startsWith(p))) return false;
-                    const county = zipCountyMap[zip] ?? '';
-                    return zone.counties.includes(county);
-                });
-            }
-        } else {
-            state.pending('No ZIP Codes API key — skipping metro exports');
+        if (uncachedZips.length > 200) {
+            state.error(`Too many uncached zip lookups required (${uncachedZips.length}), limit is 200`);
+            return;
         }
+        if (uncachedZips.length > 0 && !zipcodesKey) {
+            state.error(`ZIP Codes API key required for ${uncachedZips.length} uncached zip codes`);
+            return;
+        }
+        if (uncachedZips.length > 0) {
+            state.pending('Looking up zip codes for metro areas...');
+            // No duplicates: uncachedZips is derived from a Set, each zip appears exactly once
+            await Promise.all(uncachedZips.map(zip => lookupCounty(zip, zipcodesKey)));
+        }
+
+        const zipCountyMap: { [zip: string]: string } = {};
+        candidateZips.forEach(zip => {
+            const county = sessionStorage.getItem(`zip_county_${zip}`);
+            if (county) zipCountyMap[zip] = county;
+        });
+
+        const metroContacts: { [zoneName: string]: typeof items } = {};
+        zoneEntries.forEach(([zoneName, zone]) => {
+            metroContacts[zoneName] = items.filter(item => {
+                const zip = item.zip;
+                if (!zip || !zone.zip_prefixes.some(p => zip.startsWith(p))) return false;
+                return zone.counties.includes(zipCountyMap[zip] ?? '');
+            });
+        });
 
         state.success()
 
@@ -212,9 +218,9 @@ export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter,
         zipped('california_contacts.csv', items.filter(item => item.state == 'CA'));
         zipped('georgia_contacts.csv', items.filter(item => item.state == 'GA'));
         zipped('utah_contacts.csv', items.filter(item => item.state == 'UT'));
-        for (const [zoneName, contacts] of Object.entries(metroContacts)) {
+        Object.entries(metroContacts).forEach(([zoneName, contacts]) => {
             zipped(`${zoneName}_contacts.csv`, contacts);
-        }
+        });
         const url = URL.createObjectURL(await zip.generateAsync({type: 'blob'}));
         const link = document.createElement("a");
         link.download = "contacts.zip";

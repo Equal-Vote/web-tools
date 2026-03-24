@@ -27,6 +27,10 @@ A React + TypeScript SPA providing internal tools for the Equal Vote organizatio
 - `ContactExport.tsx` — paginates through NationBuilder signups API, maps/filters fields, generates per-state CSV files, and bundles them as a ZIP download using JSZip
 - `EventFinder.tsx` — standalone route; reads `?prefix=` URL param, fetches HTML from starvoting.org through proxy, regex-matches an event URL, then redirects
 
+## Code Style
+
+- Prefer `array.forEach` over `for...of` loops
+
 **Utilities:**
 - `src/util.tsx` — API endpoint constants and shared TypeScript types (`ReqFunc`, `StateReporter`)
 - `src/useCookie.ts` — drop-in `useState` replacement that persists to browser cookies
