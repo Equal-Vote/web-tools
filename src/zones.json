@@ -1,0 +1,30 @@
+{
+    "los_angeles": {
+        "zip_prefixes": ["900","901","902","903","904","905","906","907","908","910","911","912","913","914","915","916","917","918","935"],
+        "counties": ["Los Angeles"]
+    },
+    "portland": {
+        "zip_prefixes": ["970","971","972","973","986"],
+        "counties": ["Multnomah", "Washington", "Clackamas", "Clark", "Columbia", "Cowlitz", "Hood River", "Marion", "Yamhill"]
+    },
+    "eugene": {
+        "zip_prefixes": ["974"],
+        "counties": ["Lane"]
+    },
+    "san_francisco": {
+        "zip_prefixes": ["940","941","942","943","944","945","946","947","948","949"],
+        "counties": ["San Francisco", "Marin", "San Mateo", "Alameda", "Contra Costa"]
+    },
+    "houston": {
+        "zip_prefixes": ["770","773","774","775","776","777"],
+        "counties": ["Harris", "Fort Bend", "Montgomery", "Brazoria", "Galveston"]
+    },
+    "washington_dc": {
+        "zip_prefixes": ["200","201","202","203","204","205","206","207","208","209","220","221","222"],
+        "counties": ["District of Columbia", "Arlington", "Fairfax", "Montgomery", "Prince George's"]
+    },
+    "burlington": {
+        "zip_prefixes": ["054","056"],
+        "counties": ["Chittenden", "Washington"]
+    }
+}

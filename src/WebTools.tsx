@@ -12,6 +12,7 @@ export default () => {
     const [resultState, setResultState] = useState<'fail'|'success'|'pending'>('pending');
     const [mailchimpKey, setMailchimpKey] = useCookie('mailchimp_api_key', '');
     const [nationBuilderKey, setNationBuilderKey] = useCookie('nationbuilder_api_key', '');
+    const [zipcodesKey, setZipcodesKey] = useCookie('zipcodes_api_key', '');
     const colors = {
         'fail': '#FF8888',
         'success': '#88FF88',
@@ -104,6 +105,9 @@ export default () => {
             <Labeled label='NATIONBUILDER KEY'>
                 <TextField type='password' defaultValue={nationBuilderKey} onChange={(e) => setNationBuilderKey(e.target.value as string)}/>
             </Labeled>
+            <Labeled label='ZIP CODES KEY'>
+                <TextField type='password' defaultValue={zipcodesKey} onChange={(e) => setZipcodesKey(e.target.value as string)}/>
+            </Labeled>
             <Labeled label='Tool'>
                 <Select
                     value={tool}
@@ -116,7 +120,7 @@ export default () => {
             <Divider/>
 
             {tool == 'Coffee Pairing' && <CoffeePairing req={req} state={state}/>}
-            {tool == 'Contact Export' && <ContactExport req={req} state={state}/>}
+            {tool == 'Contact Export' && <ContactExport req={req} state={state} zipcodesKey={zipcodesKey}/>}
 
             <Divider/>
 
