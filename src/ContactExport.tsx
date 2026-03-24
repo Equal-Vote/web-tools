@@ -8,21 +8,19 @@ import zipCacheRaw from '../zip_cache.csv?raw';
 const PROXY = 'https://thawing-lowlands-28251-6bae9d7d987a.herokuapp.com/';
 const ZIP_CODES_API = 'https://api.zip-codes.com/ZipCodesAPI.svc/1.0/QuickGetZipCodeDetails/';
 
-const lookupCounty = async (zip: string, zipcodesKey: string): Promise<string | null> => {
+const lookupCounty = async (zip: string, zipcodesKey: string): Promise<string> => {
     const cacheKey = `zip_county_${zip}`;
     const cached = sessionStorage.getItem(cacheKey);
     if (cached !== null) return cached;
 
-    return fetch(`${PROXY}${ZIP_CODES_API}${zip}?key=${zipcodesKey}`, {
+    const r = await fetch(`${PROXY}${ZIP_CODES_API}${zip}?key=${zipcodesKey}`, {
         headers: new Headers({ 'Accept': 'application/json' })
-    })
-        .then(r => r.json())
-        .then(data => {
-            const county: string = data?.County ?? '';
-            sessionStorage.setItem(cacheKey, county);
-            return county;
-        })
-        .catch(() => null);
+    });
+    if (!r.ok) throw new Error(`Zip codes API error for ${zip}: HTTP ${r.status}`);
+    const data = await r.json();
+    if (!data?.County) throw new Error(`Zip codes API returned no county for ${zip}: ${JSON.stringify(data)}`);
+    sessionStorage.setItem(cacheKey, data.County);
+    return data.County;
 };
 
 export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter, zipcodesKey: string}) => {
@@ -73,10 +71,10 @@ export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter,
             ['email_opt_in', 'email_opt_in'],
             ['mobile_opt_in', 'mobile_opt_in'],
             ['is_volunteer', 'is_volunteer'],
-            ['donations_count', 'donation_count'],
-            ['donations_amount_in_cents', 'donation_dollars'],
-            ['donation_average', 'donation_average'],
-            ['last_donated_at', 'last_donation'],
+            // ['donations_count', 'donation_count'],
+            // ['donations_amount_in_cents', 'donation_dollars'],
+            // ['donation_average', 'donation_average'],
+            // ['last_donated_at', 'last_donation'],
             ['created_at', 'join_date'],
             ['updated_at', 'last_active'],
             ['primary_address.country_code', 'country'],
@@ -192,7 +190,12 @@ export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter,
         if (uncachedZips.length > 0) {
             state.pending('Looking up zip codes for metro areas...');
             // No duplicates: uncachedZips is derived from a Set, each zip appears exactly once
-            await Promise.all(uncachedZips.map(zip => lookupCounty(zip, zipcodesKey)));
+            try {
+                await Promise.all(uncachedZips.map(zip => lookupCounty(zip, zipcodesKey)));
+            } catch(e) {
+                state.error(`Zip code lookup failed: ${e}`);
+                return;
+            }
         }
 
         const zipCountyMap: { [zip: string]: string } = {};
