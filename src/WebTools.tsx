@@ -12,7 +12,7 @@ export default () => {
     const [resultState, setResultState] = useState<'fail'|'success'|'pending'>('pending');
     const [mailchimpKey, setMailchimpKey] = useCookie('mailchimp_api_key', '');
     const [nationBuilderKey, setNationBuilderKey] = useCookie('nationbuilder_api_key', '');
-    const [zipcodesKey, setZipcodesKey] = useCookie('zipcodes_api_key', '');
+    const [zipcodesKey, setZipcodesKey] = useCookie('zipcodes_api_key', 'DEMOAPIKEY'); // defaults to DEMOAPIKEY, which works but has rate limits. Hence the caching to minimize calls
     const colors = {
         'fail': '#FF8888',
         'success': '#88FF88',
