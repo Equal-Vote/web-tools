@@ -35,3 +35,17 @@ A React + TypeScript SPA providing internal tools for the Equal Vote organizatio
 - `src/util.tsx` — API endpoint constants and shared TypeScript types (`ReqFunc`, `StateReporter`)
 - `src/useCookie.ts` — drop-in `useState` replacement that persists to browser cookies
 - `src/useFetch.ts` — generic fetch hook returning `{ pending, error, data }`
+
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked as GitHub Issues on Equal-Vote/web-tools, using the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default canonical labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
