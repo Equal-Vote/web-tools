@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Typography } from '@mui/material'
 import { StatsRow, StatsTable } from './StatsTable'
-import { PROXY_ORIGIN } from './util'
+import { NATIONBUILDER, PROXY_ORIGIN } from './util'
 
-const NB_BASE = 'https://unifiedprimary.nationbuilder.com/api/v2'
 const YEARS = ['2021', '2022', '2023', '2024', '2025']
 
 type Props = {
@@ -11,7 +10,7 @@ type Props = {
 }
 
 const fetchSignupCount = async (year: string, token: string): Promise<number | null> => {
-    const url = `${NB_BASE}/signups?stats[total]=count&filter[created_at_gte]=${year}-01-01&filter[created_at_lte]=${year}-12-31T23:59:59`
+    const url = `${NATIONBUILDER}/signups?stats[total]=count&filter[created_at_gte]=${year}-01-01&filter[created_at_lte]=${year}-12-31T23:59:59`
     try {
         const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
             headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
@@ -28,7 +27,8 @@ export const NationBuilderTable = ({ getValidAccessToken }: Props) => {
     const [rows, setRows] = useState<StatsRow[] | null>(null)
 
     useEffect(() => {
-        getValidAccessToken().then(async token => {
+        const load = async () => {
+            const token = await getValidAccessToken()
             if (!token) return
             const counts = await Promise.all(YEARS.map(year => fetchSignupCount(year, token)))
             const values: Record<string, number> = {}
@@ -37,7 +37,8 @@ export const NationBuilderTable = ({ getValidAccessToken }: Props) => {
                 if (count !== null) values[year] = count
             })
             setRows([{ label: 'Volunteer Signups', values }])
-        })
+        }
+        load()
     }, [])
 
     return (
