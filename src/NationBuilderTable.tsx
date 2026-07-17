@@ -3,7 +3,7 @@ import { Typography } from '@mui/material'
 import { StatsRow, StatsTable } from './StatsTable'
 import { NATIONBUILDER, PROXY_ORIGIN } from './util'
 
-const YEARS = ['2021', '2022', '2023', '2024', '2025']
+const YEARS = ['2021', '2022', '2023', '2024', '2025', '2026']
 
 type Props = {
     getValidAccessToken: () => Promise<string | null>
@@ -104,7 +104,11 @@ const fetchDonationStatsForYear = async (year: string, token: string): Promise<D
             const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
                 headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
             })
-            if (!res.ok) return null
+            if (!res.ok){
+                console.log(url)
+                console.log(res)
+                return null
+            }
             const json = await res.json()
             const data: any[] = json?.data ?? []
 
@@ -136,10 +140,10 @@ export const NationBuilderTable = ({ getValidAccessToken }: Props) => {
             const token = await getValidAccessToken()
             if (!token) return
 
-            const [signupCounts, donationResults, eventResults] = await Promise.all([
-                Promise.all(YEARS.map(year => fetchSignupCount(year, token))),
+            const [/*signupCounts,*/ donationResults/*, eventResults*/] = await Promise.all([
+                //Promise.all(YEARS.map(year => fetchSignupCount(year, token))),
                 Promise.all(YEARS.map(year => fetchDonationStatsForYear(year, token))),
-                Promise.all(YEARS.map(year => fetchEventStatsForYear(year, token))),
+                //Promise.all(YEARS.map(year => fetchEventStatsForYear(year, token))),
             ])
 
             const signupValues: Record<string, number> = {}
@@ -153,8 +157,8 @@ export const NationBuilderTable = ({ getValidAccessToken }: Props) => {
             const chapterValues: Record<string, number> = {}
 
             YEARS.forEach((year, i) => {
-                const count = signupCounts[i]
-                if (count !== null) signupValues[year] = count
+                //const count = signupCounts[i]
+                //if (count !== null) signupValues[year] = count
 
                 const dStats = donationResults[i]
                 if (dStats !== null) {
@@ -163,14 +167,14 @@ export const NationBuilderTable = ({ getValidAccessToken }: Props) => {
                     fundsValues[year] = Math.round(dStats.fundsRaisedCents / 100)
                 }
 
-                const eStats = eventResults[i]
-                if (eStats !== null) {
-                    eventsHeldValues[year] = eStats.total
-                    inPersonValues[year] = eStats.inPerson
-                    virtualValues[year] = eStats.virtual
-                    orientationValues[year] = eStats.orientations
-                    chapterValues[year] = eStats.chapterPrefixes.size
-                }
+                //const eStats = eventResults[i]
+                //if (eStats !== null) {
+                //    eventsHeldValues[year] = eStats.total
+                //    inPersonValues[year] = eStats.inPerson
+                //    virtualValues[year] = eStats.virtual
+                //    orientationValues[year] = eStats.orientations
+                //    chapterValues[year] = eStats.chapterPrefixes.size
+                //}
             })
 
             setRows([

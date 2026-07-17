@@ -13,43 +13,8 @@ type GlobalElectionStats = {
     by_year: Record<string, YearData>
 }
 
-const FIXTURE: GlobalElectionStats = {
-    by_year: {
-        '2022': {
-            elections: 52, votes: 3100,
-            star_votes: 2100, star_elections: 35,
-            star_pr_votes: 250, star_pr_elections: 4,
-            approval_votes: 320, approval_elections: 6,
-            ranked_robin_votes: 180, ranked_robin_elections: 3,
-            rcv_votes: 110, rcv_elections: 2,
-            choose_one_votes: 130, choose_one_elections: 2,
-            stv_votes: 10, stv_elections: 0,
-            multi_method_votes: 0, multi_method_elections: 0,
-        },
-        '2023': {
-            elections: 118, votes: 8400,
-            star_votes: 5600, star_elections: 78,
-            star_pr_votes: 720, star_pr_elections: 12,
-            approval_votes: 890, approval_elections: 14,
-            ranked_robin_votes: 430, ranked_robin_elections: 7,
-            rcv_votes: 260, rcv_elections: 5,
-            choose_one_votes: 310, choose_one_elections: 2,
-            stv_votes: 90, stv_elections: 0,
-            multi_method_votes: 100, multi_method_elections: 0,
-        },
-        '2024': {
-            elections: 204, votes: 17500,
-            star_votes: 11200, star_elections: 132,
-            star_pr_votes: 1800, star_pr_elections: 24,
-            approval_votes: 1950, approval_elections: 28,
-            ranked_robin_votes: 980, ranked_robin_elections: 11,
-            rcv_votes: 620, rcv_elections: 5,
-            choose_one_votes: 700, choose_one_elections: 4,
-            stv_votes: 180, stv_elections: 0,
-            multi_method_votes: 70, multi_method_elections: 0,
-        },
-    },
-}
+const FIXTURE: GlobalElectionStats =
+{"by_year":{"2024":{"elections":209,"votes":5653,"star_votes":1857,"star_elections":142,"star_pr_votes":20,"star_pr_elections":4,"approval_votes":83,"approval_elections":15,"ranked_robin_votes":15,"ranked_robin_elections":3,"rcv_votes":12,"rcv_elections":3,"choose_one_votes":189,"choose_one_elections":3,"stv_votes":0,"stv_elections":0,"multi_method_votes":3477,"multi_method_elections":39},"2025":{"elections":1073,"votes":16186,"star_votes":9956,"star_elections":732,"star_pr_votes":857,"star_pr_elections":42,"approval_votes":664,"approval_elections":45,"ranked_robin_votes":477,"ranked_robin_elections":47,"rcv_votes":319,"rcv_elections":36,"choose_one_votes":567,"choose_one_elections":56,"stv_votes":415,"stv_elections":11,"multi_method_votes":2931,"multi_method_elections":104},"2026":{"elections":667,"votes":20827,"star_votes":15336,"star_elections":436,"star_pr_votes":228,"star_pr_elections":33,"approval_votes":215,"approval_elections":21,"ranked_robin_votes":888,"ranked_robin_elections":58,"rcv_votes":184,"rcv_elections":14,"choose_one_votes":133,"choose_one_elections":16,"stv_votes":29,"stv_elections":5,"multi_method_votes":3814,"multi_method_elections":84}}};
 
 const YEARS = Object.keys(FIXTURE.by_year).sort()
 

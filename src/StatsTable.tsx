@@ -16,6 +16,7 @@ export const StatsTable = ({ rows, years }: Props) => (
         <TableHead>
             <TableRow>
                 <TableCell />
+                <TableCell key='total'>Total</TableCell>
                 {years.map(year => <TableCell key={year}>{year}</TableCell>)}
             </TableRow>
         </TableHead>
@@ -23,6 +24,7 @@ export const StatsTable = ({ rows, years }: Props) => (
             {rows.map(row => (
                 <TableRow key={row.label}>
                     <TableCell>{row.label}</TableCell>
+                    <TableCell>{years.reduce((prev, year) => prev + row.values[year], 0)}</TableCell>
                     {years.map(year => {
                         const val = row.values[year]
                         let display: string | number = '-'
