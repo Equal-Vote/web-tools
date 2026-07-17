@@ -51,32 +51,32 @@ const FIXTURE: GlobalElectionStats = {
     },
 }
 
-export const BetterVotingTable = () => {
-    const years = Object.keys(FIXTURE.by_year).sort()
+const YEARS = Object.keys(FIXTURE.by_year).sort()
 
-    const rows: StatsRow[] = [
+const ROWS: StatsRow[] = [
+    {
+        label: 'Elections Created',
+        values: Object.fromEntries(YEARS.map(y => [y, FIXTURE.by_year[y].elections])),
+    },
+    {
+        label: 'Votes Cast',
+        values: Object.fromEntries(YEARS.map(y => [y, FIXTURE.by_year[y].votes])),
+    },
+    ...VOTING_METHODS.flatMap(method => [
         {
-            label: 'Elections Created',
-            values: Object.fromEntries(years.map(y => [y, FIXTURE.by_year[y].elections])),
+            label: `${method} Elections`,
+            values: Object.fromEntries(YEARS.map(y => [y, FIXTURE.by_year[y][`${method}_elections`]])),
         },
         {
-            label: 'Votes Cast',
-            values: Object.fromEntries(years.map(y => [y, FIXTURE.by_year[y].votes])),
+            label: `${method} Votes`,
+            values: Object.fromEntries(YEARS.map(y => [y, FIXTURE.by_year[y][`${method}_votes`]])),
         },
-        ...VOTING_METHODS.flatMap(method => [
-            {
-                label: `${method} Elections`,
-                values: Object.fromEntries(years.map(y => [y, FIXTURE.by_year[y][`${method}_elections`]])),
-            },
-            {
-                label: `${method} Votes`,
-                values: Object.fromEntries(years.map(y => [y, FIXTURE.by_year[y][`${method}_votes`]])),
-            },
-        ]),
-    ]
+    ]),
+]
 
-    return <>
+export const BetterVotingTable = () => (
+    <>
         <Typography variant='h5' sx={{ mt: 2 }}>BetterVoting Stats</Typography>
-        <StatsTable rows={rows} years={years} />
+        <StatsTable rows={ROWS} years={YEARS} />
     </>
-}
+)

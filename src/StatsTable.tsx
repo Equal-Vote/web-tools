@@ -14,13 +14,13 @@ export const StatsTable = ({ rows, years }: Props) => (
     <Table size='small'>
         <TableHead>
             <TableRow>
-                <TableCell></TableCell>
+                <TableCell />
                 {years.map(year => <TableCell key={year}>{year}</TableCell>)}
             </TableRow>
         </TableHead>
         <TableBody>
-            {rows.map((row, i) => (
-                <TableRow key={i}>
+            {rows.map(row => (
+                <TableRow key={row.label}>
                     <TableCell>{row.label}</TableCell>
                     {years.map(year => (
                         <TableCell key={year}>{row.values[year] ?? '-'}</TableCell>
