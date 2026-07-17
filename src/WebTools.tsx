@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
-import { Box, Button, Divider, MenuItem, Select, TextField, Typography } from '@mui/material'
+import { useState } from 'react'
+import { Box, Divider, MenuItem, Select, TextField, Typography } from '@mui/material'
 import { Labeled, PROXY_ORIGIN, ReqFunc, StateReporter } from './util'
 import CoffeePairing from './CoffeePairing'
 import ContactExport from './ContactExport'
 import { useCookie } from './useCookie'
-import { exchangeCodeForTokens, login, parseTokens, refreshTokens } from './nationBuilderAuth'
+import { useNationBuilderAuth } from './useNationBuilderAuth'
+import { NationBuilderStatus } from './NationBuilderStatus'
 import logo from './assets/logo.png'
 
 export default () => {
@@ -13,8 +14,7 @@ export default () => {
     const [result, setResult] = useState([] as string[]);
     const [resultState, setResultState] = useState<'fail'|'success'|'pending'>('pending');
     const [mailchimpKey, setMailchimpKey] = useCookie('mailchimp_api_key', '');
-    const [nbTokensRaw, setNbTokensRaw] = useCookie('nationbuilder_oauth', null);
-    const nbTokens = parseTokens(nbTokensRaw);
+    const nbAuth = useNationBuilderAuth();
     const [zipcodesKey, setZipcodesKey] = useCookie('zipcodes_api_key', 'DEMOAPIKEY'); // defaults to DEMOAPIKEY, which works but has rate limits. Hence the caching to minimize calls
     const colors = {
         'fail': '#FF8888',
@@ -46,33 +46,11 @@ export default () => {
         mailchimp: mailchimpKey,
     }
 
-    // Proactively refreshes the access token before it expires, per the schema in #14.
-    const getValidNbAccessToken = async (): Promise<string | null> => {
-        if (!nbTokens) return null;
-        if (nbTokens.expires_at > Date.now() + 60_000) return nbTokens.access_token;
-        const refreshed = await refreshTokens(nbTokens.refresh_token);
-        if (!refreshed) {
-            setNbTokensRaw(null); // refresh token rotated out from under us or expired session: fall back to login button
-            return null;
-        }
-        setNbTokensRaw(JSON.stringify(refreshed));
-        return refreshed.access_token;
-    }
-
-    useEffect(() => {
-        const code = new URLSearchParams(window.location.search).get('code');
-        if (!code) return;
-        exchangeCodeForTokens(code).then(tokens => {
-            if (tokens) setNbTokensRaw(JSON.stringify(tokens));
-            window.history.replaceState({}, '', window.location.pathname + window.location.hash);
-        });
-    }, []);
-
     const req: ReqFunc = async (keyName: 'mailchimp'|'nationbuilder', url: string, method: string, body?: string) => {
 				const authHeader = keyName == 'mailchimp'
 						? `Basic ${btoa(`anystring:${keys[keyName]}`)}`
 						: await (async () => {
-								const token = await getValidNbAccessToken();
+								const token = await nbAuth.getValidAccessToken();
 								if (!token) {
 										state.error('Not logged in to NationBuilder');
 										return null;
@@ -134,21 +112,7 @@ export default () => {
                 <TextField type='password' defaultValue={mailchimpKey} onChange={(e) => setMailchimpKey(e.target.value as string)}/>
             </Labeled>
             <Labeled label={`NATIONBUILDER`}>
-                <Box display='flex' flexDirection='row' alignItems='center' gap={2}>
-                {nbTokens
-                    ? 
-                    <>
-                        <Typography><i>✓ Logged in</i></Typography>
-                        <Button variant='outlined' size='small' onClick={() => setNbTokensRaw(null)}>Log out</Button>
-                    </>
-                    : 
-                    <>
-                        <Typography><i>Logged out</i></Typography>
-                        <Button variant='contained' size='small' onClick={login}>Log in</Button>
-                    </>
-
-                }
-                </Box>
+                <NationBuilderStatus auth={nbAuth} />
             </Labeled>
             <Labeled label='ZIP CODES KEY'>
                 <TextField type='password' defaultValue={zipcodesKey} onChange={(e) => setZipcodesKey(e.target.value as string)}/>
