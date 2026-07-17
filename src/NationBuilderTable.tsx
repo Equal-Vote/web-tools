@@ -15,7 +15,13 @@ const fetchSignupCount = async (year: string, token: string): Promise<number | n
         const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
             headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         })
-        if (!res.ok) return null
+        if (!res.ok){
+            console.log('signups')
+            console.log(url)
+            console.log(res)
+            console.log(await res.json())
+            return null
+        }
         const json = await res.json()
         return json?.meta?.stats?.total?.count ?? null
     } catch {
@@ -32,6 +38,7 @@ const fetchSignupCount = async (year: string, token: string): Promise<number | n
  }
 
 const fetchEventStatsForYear = async (year: string, token: string): Promise<EventStats | null> => {
+    return null;
     const stats: EventStats = { total: 0, inPerson: 0, virtual: 0, orientations: 0, chapterPrefixes: new Set() }
     let page = 1
     const pageSize = 100
@@ -94,6 +101,7 @@ type DonationStats = {
 }
 
 const fetchDonationStatsForYear = async (year: string, token: string): Promise<DonationStats | null> => {
+    return null;
     const stats: DonationStats = { donations: 0, donors: new Set(), fundsRaisedCents: 0 }
     let page = 1
     const pageSize = 100
