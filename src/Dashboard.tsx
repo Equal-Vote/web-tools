@@ -2,6 +2,7 @@ import { Box, Typography } from '@mui/material'
 import { useNationBuilderAuth } from './useNationBuilderAuth'
 import { NationBuilderStatus } from './NationBuilderStatus'
 import { BetterVotingTable } from './BetterVotingTable'
+import { NationBuilderTable } from './NationBuilderTable'
 
 export default () => {
     const auth = useNationBuilderAuth()
@@ -10,6 +11,7 @@ export default () => {
         <Typography variant='h4' sx={{ mb: 2 }}>Dashboard</Typography>
         <NationBuilderStatus auth={auth}>
             <BetterVotingTable />
+            <NationBuilderTable getValidAccessToken={auth.getValidAccessToken} />
         </NationBuilderStatus>
     </Box>
 }
