@@ -1,5 +1,7 @@
-import { Typography } from '@mui/material'
+import { useEffect, useState } from 'react'
+import { CircularProgress, Typography } from '@mui/material'
 import { StatsRow, StatsTable } from './StatsTable'
+import { GLOBAL_ELECTION_STATS_API, PROXY_ORIGIN } from './util'
 
 const VOTING_METHODS = ['star', 'star_pr', 'approval', 'ranked_robin', 'rcv', 'choose_one', 'stv', 'multi_method'] as const
 type VotingMethod = typeof VOTING_METHODS[number]
@@ -13,70 +15,54 @@ type GlobalElectionStats = {
     by_year: Record<string, YearData>
 }
 
-const FIXTURE: GlobalElectionStats = {
-    by_year: {
-        '2022': {
-            elections: 52, votes: 3100,
-            star_votes: 2100, star_elections: 35,
-            star_pr_votes: 250, star_pr_elections: 4,
-            approval_votes: 320, approval_elections: 6,
-            ranked_robin_votes: 180, ranked_robin_elections: 3,
-            rcv_votes: 110, rcv_elections: 2,
-            choose_one_votes: 130, choose_one_elections: 2,
-            stv_votes: 10, stv_elections: 0,
-            multi_method_votes: 0, multi_method_elections: 0,
+function buildRows(stats: GlobalElectionStats): { years: string[]; rows: StatsRow[] } {
+    const years = Object.keys(stats.by_year).sort()
+    const rows: StatsRow[] = [
+        {
+            label: 'Elections Created',
+            values: Object.fromEntries(years.map(y => [y, stats.by_year[y].elections])),
         },
-        '2023': {
-            elections: 118, votes: 8400,
-            star_votes: 5600, star_elections: 78,
-            star_pr_votes: 720, star_pr_elections: 12,
-            approval_votes: 890, approval_elections: 14,
-            ranked_robin_votes: 430, ranked_robin_elections: 7,
-            rcv_votes: 260, rcv_elections: 5,
-            choose_one_votes: 310, choose_one_elections: 2,
-            stv_votes: 90, stv_elections: 0,
-            multi_method_votes: 100, multi_method_elections: 0,
+        {
+            label: 'Votes Cast',
+            values: Object.fromEntries(years.map(y => [y, stats.by_year[y].votes])),
         },
-        '2024': {
-            elections: 204, votes: 17500,
-            star_votes: 11200, star_elections: 132,
-            star_pr_votes: 1800, star_pr_elections: 24,
-            approval_votes: 1950, approval_elections: 28,
-            ranked_robin_votes: 980, ranked_robin_elections: 11,
-            rcv_votes: 620, rcv_elections: 5,
-            choose_one_votes: 700, choose_one_elections: 4,
-            stv_votes: 180, stv_elections: 0,
-            multi_method_votes: 70, multi_method_elections: 0,
-        },
-    },
+        ...VOTING_METHODS.flatMap(method => [
+            {
+                label: `${method} Elections`,
+                values: Object.fromEntries(years.map(y => [y, stats.by_year[y][`${method}_elections`]])),
+            },
+            {
+                label: `${method} Votes`,
+                values: Object.fromEntries(years.map(y => [y, stats.by_year[y][`${method}_votes`]])),
+            },
+        ]),
+    ]
+    return { years, rows }
 }
 
-const YEARS = Object.keys(FIXTURE.by_year).sort()
+export const BetterVotingTable = () => {
+    const [stats, setStats] = useState<GlobalElectionStats | null>(null)
+    const [error, setError] = useState<string | null>(null)
 
-const ROWS: StatsRow[] = [
-    {
-        label: 'Elections Created',
-        values: Object.fromEntries(YEARS.map(y => [y, FIXTURE.by_year[y].elections])),
-    },
-    {
-        label: 'Votes Cast',
-        values: Object.fromEntries(YEARS.map(y => [y, FIXTURE.by_year[y].votes])),
-    },
-    ...VOTING_METHODS.flatMap(method => [
-        {
-            label: `${method} Elections`,
-            values: Object.fromEntries(YEARS.map(y => [y, FIXTURE.by_year[y][`${method}_elections`]])),
-        },
-        {
-            label: `${method} Votes`,
-            values: Object.fromEntries(YEARS.map(y => [y, FIXTURE.by_year[y][`${method}_votes`]])),
-        },
-    ]),
-]
+    useEffect(() => {
+        fetch(`${PROXY_ORIGIN}/${GLOBAL_ELECTION_STATS_API}`)
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`)
+                return res.json() as Promise<GlobalElectionStats>
+            })
+            .then(setStats)
+            .catch((err: Error) => setError(err.message))
+    }, [])
 
-export const BetterVotingTable = () => (
-    <>
+    const content = () => {
+        if (error) return <Typography color='error'>Failed to load BetterVoting stats: {error}</Typography>
+        if (!stats) return <CircularProgress size={24} />
+        const { years, rows } = buildRows(stats)
+        return <StatsTable rows={rows} years={years} />
+    }
+
+    return <>
         <Typography variant='h5' sx={{ mt: 2 }}>BetterVoting Stats</Typography>
-        <StatsTable rows={ROWS} years={YEARS} />
+        {content()}
     </>
-)
+}
