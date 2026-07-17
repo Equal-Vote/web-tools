@@ -74,6 +74,7 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
                 const pageAttrs = pageId != null ? pageMap.get(String(pageId)) ?? {} : {}
                 const slug = pageAttrs.slug ?? ''
                 const title = pageAttrs.name ?? ''
+                const start_at = pageAttrs.start_at ?? ''
 
                 console.log(slug, title, start_at)
 
