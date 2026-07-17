@@ -59,6 +59,8 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
                 if (item.type === 'pages') pageMap.set(item.id, item.attributes ?? {})
             })
 
+            console.log('event data', data);
+
             data.forEach(event => {
                 const attrs = event?.attributes ?? {}
                 stats.total++
