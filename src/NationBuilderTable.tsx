@@ -9,19 +9,19 @@ type Props = {
     getValidAccessToken: () => Promise<string | null>
 }
 
-const fetchSignupCount = async (year: string, token: string): Promise<number | null> => {
-    const url = `${NATIONBUILDER}/signups?stats[total]=count&filter[created_at_gte]=${year}-01-01&filter[created_at_lte]=${year}-12-31T23:59:59`
-    try {
-        const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-        })
-        if (!res.ok) return null
-        const json = await res.json()
-        return json?.meta?.stats?.total?.count ?? null
-    } catch {
-        return null
-    }
-}
+//const fetchSignupCount = async (year: string, token: string): Promise<number | null> => {
+//    const url = `${NATIONBUILDER}/signups?stats[total]=count&filter[created_at_gte]=${year}-01-01&filter[created_at_lte]=${year}-12-31T23:59:59`
+//    try {
+//        const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
+//            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+//        })
+//        if (!res.ok) return null
+//        const json = await res.json()
+//        return json?.meta?.stats?.total?.count ?? null
+//    } catch {
+//        return null
+//    }
+//}
 
 type EventStats = {
     total: number
@@ -31,61 +31,61 @@ type EventStats = {
     chapterPrefixes: Set<string>
 }
 
-const fetchEventStatsForYear = async (year: string, token: string): Promise<EventStats | null> => {
-    const stats: EventStats = { total: 0, inPerson: 0, virtual: 0, orientations: 0, chapterPrefixes: new Set() }
-    let page = 1
-    const pageSize = 100
-
-    while (true) {
-        const url = `${NATIONBUILDER}/events?filter[start_at][gte]=${year}-01-01T00:00:00&filter[start_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[events]=venue_name,page_id&include=page&fields[pages]=slug,name`
-        try {
-            const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
-                headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-            })
-            if (!res.ok) return null
-            const json = await res.json()
-            const data: any[] = json?.data ?? []
-            const included: any[] = json?.included ?? []
-
-            const pageMap = new Map<string, any>()
-            included.forEach(item => {
-                if (item.type === 'pages') pageMap.set(item.id, item.attributes ?? {})
-            })
-
-            data.forEach(event => {
-                const attrs = event?.attributes ?? {}
-                stats.total++
-
-                const venueName: string | null = attrs.venue_name ?? null
-                if (venueName && !/virtual/i.test(venueName)) {
-                    stats.inPerson++
-                } else {
-                    stats.virtual++
-                }
-
-                const pageId = attrs.page_id ?? event?.relationships?.page?.data?.id
-                const pageAttrs = pageId != null ? pageMap.get(String(pageId)) ?? {} : {}
-                const slug = pageAttrs.slug ?? ''
-                const title = pageAttrs.name ?? ''
-
-                if (/orientation/i.test(slug) || /orientation/i.test(title)) {
-                    stats.orientations++
-                }
-
-                const callMatch = slug.match(/^([^_]+)_call_/)
-                if (callMatch) stats.chapterPrefixes.add(callMatch[1].toLowerCase())
-            })
-
-            const nextPage = json?.meta?.pagination?.next_page
-            if (!nextPage || data.length < pageSize) break
-            page = nextPage
-        } catch {
-            return null
-        }
-    }
-
-    return stats
-}
+//const fetchEventStatsForYear = async (year: string, token: string): Promise<EventStats | null> => {
+//    const stats: EventStats = { total: 0, inPerson: 0, virtual: 0, orientations: 0, chapterPrefixes: new Set() }
+//    let page = 1
+//    const pageSize = 100
+//
+//    while (true) {
+//        const url = `${NATIONBUILDER}/events?filter[start_at][gte]=${year}-01-01T00:00:00&filter[start_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[events]=venue_name,page_id&include=page&fields[pages]=slug,name`
+//        try {
+//            const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
+//                headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+//            })
+//            if (!res.ok) return null
+//            const json = await res.json()
+//            const data: any[] = json?.data ?? []
+//            const included: any[] = json?.included ?? []
+//
+//            const pageMap = new Map<string, any>()
+//            included.forEach(item => {
+//                if (item.type === 'pages') pageMap.set(item.id, item.attributes ?? {})
+//            })
+//
+//            data.forEach(event => {
+//                const attrs = event?.attributes ?? {}
+//                stats.total++
+//
+//                const venueName: string | null = attrs.venue_name ?? null
+//                if (venueName && !/virtual/i.test(venueName)) {
+//                    stats.inPerson++
+//                } else {
+//                    stats.virtual++
+//                }
+//
+//                const pageId = attrs.page_id ?? event?.relationships?.page?.data?.id
+//                const pageAttrs = pageId != null ? pageMap.get(String(pageId)) ?? {} : {}
+//                const slug = pageAttrs.slug ?? ''
+//                const title = pageAttrs.name ?? ''
+//
+//                if (/orientation/i.test(slug) || /orientation/i.test(title)) {
+//                    stats.orientations++
+//                }
+//
+//                const callMatch = slug.match(/^([^_]+)_call_/)
+//                if (callMatch) stats.chapterPrefixes.add(callMatch[1].toLowerCase())
+//            })
+//
+//            const nextPage = json?.meta?.pagination?.next_page
+//            if (!nextPage || data.length < pageSize) break
+//            page = nextPage
+//        } catch {
+//            return null
+//        }
+//    }
+//
+//    return stats
+//}
 
 type DonationStats = {
     donations: number
