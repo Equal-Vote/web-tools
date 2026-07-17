@@ -106,15 +106,15 @@ export default () => {
 				})
     }
 
-    const Header = () => <Box display='flex' flexDirection='row' gap={2} sx={{margin: 'auto', maxWidth: '500px'}}>
+    const size = '150px';
+    const Header = () => <Box display='flex' flexDirection='row' alignItems='center' gap={2} sx={{margin: 'auto', maxWidth: '500px'}}>
         <Box sx={{
-            width: '100px',
-            height: '100px',
-            borderRadius: '50%',
+            width: size,
+            height: size,
             my: 'auto',
             backgroundImage: `url(${logo})`,
             backgroundPosition: 'center center',
-            backgroundSize: '100px',
+            backgroundSize: size,
             flexGrow: '0',
             flexShrink: '0',
         }}/>
