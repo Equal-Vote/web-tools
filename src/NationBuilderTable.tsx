@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Typography } from '@mui/material'
 import { StatsRow, StatsTable } from './StatsTable'
-import { NATIONBUILDER, PROXY_ORIGIN } from './util'
+import { NATIONBUILDER, NATIONBUILDER_BASE, PROXY_ORIGIN } from './util'
 
 const YEARS = ['2021', '2022', '2023', '2024', '2025', '2026']
 
@@ -36,11 +36,10 @@ const fetchSignupCount = async (year: string, token: string): Promise<number | n
 
 const fetchEventStatsForYear = async (year: string, token: string): Promise<EventStats | null> => {
     const stats: EventStats = { total: 0, inPerson: 0, virtual: 0, orientations: 0, chapterPrefixes: new Set() }
-    let page = 1
     const pageSize = 100
 
     while (true) {
-        let url = `${NATIONBUILDER}/events?filter[start_at][gte]=${year}-01-01T00:00:00&filter[start_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[events]=venue_name,page_id,start_at&include=page&fields[pages]=slug,name`
+        let url = `${NATIONBUILDER}/events?filter[start_at][gte]=${year}-01-01T00:00:00&filter[start_at][lte]=${year}-12-31T23:59:59&page[size]=${pageSize}&fields[events]=venue_name,page_id,start_at&include=page&fields[pages]=slug,name`
         try {
             console.log('events page', year, url);
             const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
@@ -89,9 +88,8 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
 
             if(data.length == 0) break;
             console.log('before', url)
-            url = json.links?.next;
+            url = NATIONBUILDER_BASE+json.links?.next;
             console.log('after', url)
-            break;
         } catch {
             return null
         }
@@ -108,11 +106,10 @@ type DonationStats = {
 
 const fetchDonationStatsForYear = async (year: string, token: string): Promise<DonationStats | null> => {
     const stats: DonationStats = { donations: 0, donors: new Set(), fundsRaisedCents: 0 }
-    const page = 1
     const pageSize = 100
 
     while (true) {
-        let url = `${NATIONBUILDER}/donations?filter[status]=succeeded&filter[succeeded_at][gte]=${year}-01-01&filter[succeeded_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[donations]=amount_in_cents,signup_id`
+        let url = `${NATIONBUILDER}/donations?filter[status]=succeeded&filter[succeeded_at][gte]=${year}-01-01&filter[succeeded_at][lte]=${year}-12-31T23:59:59&page[size]=${pageSize}&fields[donations]=amount_in_cents,signup_id`
         try {
             const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
                 headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
@@ -135,7 +132,7 @@ const fetchDonationStatsForYear = async (year: string, token: string): Promise<D
 
 
             if(data.length == 0) break;
-            url = json.links?.next;
+            url = NATIONBUILDER_BASE+json.links?.next;
         } catch {
             return null
         }
