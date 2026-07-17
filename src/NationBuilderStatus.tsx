@@ -6,8 +6,6 @@ type Props = {
     children?: React.ReactNode
 }
 
-// Renders the NationBuilder login/logout status block.
-// When logged in, also renders children (if provided).
 export const NationBuilderStatus = ({ auth, children }: Props) => (
     <>
         <Box display='flex' flexDirection='row' alignItems='center' gap={2}>
