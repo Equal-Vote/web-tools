@@ -23,13 +23,13 @@ type Props = {
 //    }
 //}
 
-type EventStats = {
-    total: number
-    inPerson: number
-    virtual: number
-    orientations: number
-    chapterPrefixes: Set<string>
-}
+// type EventStats = {
+//     total: number
+//     inPerson: number
+//     virtual: number
+//     orientations: number
+//     chapterPrefixes: Set<string>
+// }
 
 //const fetchEventStatsForYear = async (year: string, token: string): Promise<EventStats | null> => {
 //    const stats: EventStats = { total: 0, inPerson: 0, virtual: 0, orientations: 0, chapterPrefixes: new Set() }
