@@ -6,7 +6,7 @@ import { NATIONBUILDER, NATIONBUILDER_BASE, PROXY_ORIGIN } from './util'
 const years_from = 2014
 const years_to = 2026;
 const YEARS = Array.from(
-  { length: years_from - years_to + 1 },
+  { length: years_to - years_from + 1 },
   (_, i) => String(years_from + i)
 );
 console.log("YEARS", YEARS)
