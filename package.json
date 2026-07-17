@@ -21,8 +21,7 @@
     "jszip": "^3.10.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^7.5.2",
-    "zod": "^4.4.3"
+    "react-router-dom": "^7.5.2"
   },
   "devDependencies": {
     "@ai-hero/sandcastle": "^0.12.0",
