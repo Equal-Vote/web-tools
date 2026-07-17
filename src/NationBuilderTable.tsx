@@ -42,7 +42,7 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
     while (true) {
         try {
             console.log('events page', page);
-            const url = `${NATIONBUILDER}/events?filter[start_at][gte]=${year}-01-01T00:00:00&filter[start_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[events]=venue_name,page_id&include=page&fields[pages]=slug,name`
+            let url = `${NATIONBUILDER}/events?filter[start_at][gte]=${year}-01-01T00:00:00&filter[start_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[events]=venue_name,page_id&include=page&fields[pages]=slug,name`
             const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
                 headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
             })
@@ -86,11 +86,8 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
             })
             console.log('chapters', stats.chapterPrefixes)
 
-
-            const nextPage = json?.meta?.pagination?.next_page
-            console.log(nextPage, data.length, pageSize);
-            if (!nextPage || data.length < pageSize) break
-            page = nextPage
+            if(data.length == 0) break;
+            url = json.links?.next;
         } catch {
             return null
         }
@@ -107,12 +104,12 @@ type DonationStats = {
 
 const fetchDonationStatsForYear = async (year: string, token: string): Promise<DonationStats | null> => {
     const stats: DonationStats = { donations: 0, donors: new Set(), fundsRaisedCents: 0 }
-    let page = 1
+    const page = 1
     const pageSize = 100
 
     while (true) {
         try {
-            const url = `${NATIONBUILDER}/donations?filter[status]=succeeded&filter[succeeded_at][gte]=${year}-01-01&filter[succeeded_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[donations]=amount_in_cents,signup_id`
+            let url = `${NATIONBUILDER}/donations?filter[status]=succeeded&filter[succeeded_at][gte]=${year}-01-01&filter[succeeded_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[donations]=amount_in_cents,signup_id`
             const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
                 headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
             })
@@ -132,9 +129,9 @@ const fetchDonationStatsForYear = async (year: string, token: string): Promise<D
                 if (typeof cents === 'number') stats.fundsRaisedCents += cents
             })
 
-            const nextPage = json?.meta?.pagination?.next_page
-            if (!nextPage || data.length < pageSize) break
-            page = nextPage
+
+            if(data.length == 0) break;
+            url = json.links?.next;
         } catch {
             return null
         }
