@@ -44,14 +44,14 @@ const fetchDonationStatsForYear = async (year: string, token: string): Promise<D
             const json = await res.json()
             const data: any[] = json?.data ?? []
 
-            for (const donation of data) {
+            data.forEach(donation => {
                 const attrs = donation?.attributes ?? {}
                 stats.donations++
                 const signupId = attrs.signup_id ?? donation?.relationships?.signup?.data?.id
                 if (signupId != null) stats.donors.add(String(signupId))
                 const cents = attrs.amount_in_cents
                 if (typeof cents === 'number') stats.fundsRaisedCents += cents
-            }
+            })
 
             const nextPage = json?.meta?.pagination?.next_page
             if (!nextPage || data.length < pageSize) break

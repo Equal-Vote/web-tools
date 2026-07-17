@@ -25,7 +25,9 @@ export const StatsTable = ({ rows, years }: Props) => (
                     <TableCell>{row.label}</TableCell>
                     {years.map(year => {
                         const val = row.values[year]
-                        return <TableCell key={year}>{val !== undefined ? (row.format ? row.format(val) : val) : '-'}</TableCell>
+                        let display: string | number = '-'
+                        if (val !== undefined) display = row.format ? row.format(val) : val
+                        return <TableCell key={year}>{display}</TableCell>
                     })}
                 </TableRow>
             ))}
