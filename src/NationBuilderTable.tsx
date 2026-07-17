@@ -16,10 +16,7 @@ const fetchSignupCount = async (year: string, token: string): Promise<number | n
             headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         })
         if (!res.ok){
-            console.log('signups')
-            console.log(url)
-            console.log(res)
-            console.log(await res.json())
+            console.log('signups failed', res, await res.json())
             return null
         }
         const json = await res.json()
@@ -38,7 +35,6 @@ const fetchSignupCount = async (year: string, token: string): Promise<number | n
  }
 
 const fetchEventStatsForYear = async (year: string, token: string): Promise<EventStats | null> => {
-    return null;
     const stats: EventStats = { total: 0, inPerson: 0, virtual: 0, orientations: 0, chapterPrefixes: new Set() }
     let page = 1
     const pageSize = 100
@@ -49,7 +45,10 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
             const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
                 headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
             })
-            if (!res.ok) return null
+            if (!res.ok){
+                console.log('events failed', res, await res.json())
+                return null
+            }
             const json = await res.json()
             const data: any[] = json?.data ?? []
             const included: any[] = json?.included ?? []
@@ -101,7 +100,6 @@ type DonationStats = {
 }
 
 const fetchDonationStatsForYear = async (year: string, token: string): Promise<DonationStats | null> => {
-    return null;
     const stats: DonationStats = { donations: 0, donors: new Set(), fundsRaisedCents: 0 }
     let page = 1
     const pageSize = 100
@@ -113,8 +111,7 @@ const fetchDonationStatsForYear = async (year: string, token: string): Promise<D
                 headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
             })
             if (!res.ok){
-                console.log(url)
-                console.log(res)
+                console.log('donations failed', res, await res.json())
                 return null
             }
             const json = await res.json()
