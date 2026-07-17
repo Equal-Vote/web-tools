@@ -88,7 +88,10 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
             console.log('chapters', stats.chapterPrefixes)
 
             if(data.length == 0) break;
+            console.log('before', url)
             url = json.links?.next;
+            console.log('after', url)
+            break;
         } catch {
             return null
         }
