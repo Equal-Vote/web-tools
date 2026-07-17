@@ -132,14 +132,22 @@ export default () => {
             <Labeled label='MAILCHIMP KEY'>
                 <TextField type='password' defaultValue={mailchimpKey} onChange={(e) => setMailchimpKey(e.target.value as string)}/>
             </Labeled>
-            <Labeled label={`NationBuilder: ${nbTokens ? 'Logged in' : 'Logged out'}`}>
+            <Labeled label={`NATIONBUILDER`}>
+                <Box display='flex' flexDirection='row' alignItems='center' gap={2}>
                 {nbTokens
-                    ? <Box display='flex' flexDirection='row' alignItems='center' gap={2}>
-                        <Typography>✓</Typography>
+                    ? 
+                    <>
+                        <Typography><i>✓ Logged in</i></Typography>
                         <Button variant='outlined' size='small' onClick={() => setNbTokensRaw(null)}>Log out</Button>
-                    </Box>
-                    : <Button variant='contained' onClick={login}>Log in with NationBuilder</Button>
+                    </>
+                    : 
+                    <>
+                        <Typography><i>Logged out</i></Typography>
+                        <Button variant='contained' size='small' onClick={login}>Log in</Button>
+                    </>
+
                 }
+                </Box>
             </Labeled>
             <Labeled label='ZIP CODES KEY'>
                 <TextField type='password' defaultValue={zipcodesKey} onChange={(e) => setZipcodesKey(e.target.value as string)}/>
