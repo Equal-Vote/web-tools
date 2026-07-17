@@ -64,9 +64,9 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
                 }
 
                 const pageId = attrs.page_id ?? event?.relationships?.page?.data?.id
-                const pageAttrs = pageId != null ? (pageMap.get(String(pageId)) ?? {}) : {}
-                const slug: string = pageAttrs.slug ?? ''
-                const title: string = pageAttrs.name ?? ''
+                const pageAttrs = pageId != null ? pageMap.get(String(pageId)) ?? {} : {}
+                const slug = pageAttrs.slug ?? ''
+                const title = pageAttrs.name ?? ''
 
                 if (/orientation/i.test(slug) || /orientation/i.test(title)) {
                     stats.orientations++
