@@ -8,6 +8,8 @@ export const MEMBER_API = `${MAILCHIMP}/lists/ac99b517dc/members/__MEMBER__`
 export const COFFEE_MEMBERS_API = `${MAILCHIMP}/lists/ac99b517dc/segments/26023824/members`
 export const ALL_MEMBERS_API = `${MAILCHIMP}/lists/ac99b517dc/members?count=__COUNT__&offset=__OFFSET__`
 
+export const GLOBAL_ELECTION_STATS_API = 'https://bettervoting.com/api/global_election_stats'
+
 const NATIONBUILDER = 'https://unifiedprimary.nationbuilder.com/api/v2'
 export const SIGNUPS_API = `${NATIONBUILDER}/signups?fields[signups]=__FIELDS__&extra_fields[signups]=__EXTRA_FIELDS__&page[number]=__PAGE__&page[size]=__PAGE_SIZE__&filter[with_bouncing_email]=false`
 export const GET_SIGNUP_API = `${NATIONBUILDER}/signups/__ID__`//?fields[signups]=__FIELDS__&extra_fields[signups]=__EXTRA_FIELDS__`
