@@ -40,7 +40,7 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
     const pageSize = 100
 
     while (true) {
-        let url = `${NATIONBUILDER}/events?filter[start_at][gte]=${year}-01-01T00:00:00&filter[start_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[events]=venue_name,page_id&include=page&fields[pages]=slug,name`
+        let url = `${NATIONBUILDER}/events?filter[start_at][gte]=${year}-01-01T00:00:00&filter[start_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[events]=venue_name,page_id,start_at&include=page&fields[pages]=slug,name`
         try {
             console.log('events page', year, url);
             const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
@@ -75,7 +75,7 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
                 const slug = pageAttrs.slug ?? ''
                 const title = pageAttrs.name ?? ''
 
-                console.log(slug, title)
+                console.log(slug, title, start_at)
 
                 if (/orientation/i.test(slug) || /orientation/i.test(title)) {
                     stats.orientations++
