@@ -5,6 +5,7 @@ import CoffeePairing from './CoffeePairing'
 import ContactExport from './ContactExport'
 import { useCookie } from './useCookie'
 import { exchangeCodeForTokens, login, parseTokens, refreshTokens } from './nationBuilderAuth'
+import logo from './assets/logo.png'
 
 export default () => {
     const tools = ['Coffee Pairing', 'Contact Export']
@@ -111,7 +112,7 @@ export default () => {
             height: '100px',
             borderRadius: '50%',
             my: 'auto',
-            backgroundImage: 'url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgNGe18hYP39IQTAd3h0CwupcSMat_iplgGA&s)',
+            backgroundImage: `url(${logo})`,
             backgroundPosition: 'center center',
             backgroundSize: '100px',
             flexGrow: '0',
