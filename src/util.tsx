@@ -1,6 +1,8 @@
 import { Box, Typography } from "@mui/material";
 
 
+export const PROXY_ORIGIN = 'https://thawing-lowlands-28251-6bae9d7d987a.herokuapp.com'
+
 const MAILCHIMP = 'https://us19.api.mailchimp.com/3.0'
 export const MEMBER_API = `${MAILCHIMP}/lists/ac99b517dc/members/__MEMBER__`
 export const COFFEE_MEMBERS_API = `${MAILCHIMP}/lists/ac99b517dc/segments/26023824/members`

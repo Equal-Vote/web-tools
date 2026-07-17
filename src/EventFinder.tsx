@@ -2,12 +2,13 @@ import { Typography } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import useFetch from "./useFetch";
 import { useEffect } from "react";
+import { PROXY_ORIGIN } from "./util";
 
 export default () => {
     const [params] = useSearchParams();
     const { data, isPending, makeRequest: fetchEvents } = useFetch(
-        'https://thawing-lowlands-28251-6bae9d7d987a.herokuapp.com/https://starvoting.org/events',
-        'get', 
+        `${PROXY_ORIGIN}/https://starvoting.org/events`,
+        'get',
     )
 
     useEffect(() => {fetchEvents()}, [])

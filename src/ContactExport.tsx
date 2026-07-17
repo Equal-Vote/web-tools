@@ -1,11 +1,10 @@
 import { Button } from "@mui/material";
-import { SIGNUPS_API, ReqFunc, StateReporter, StringMap, GET_SIGNUP_API } from "./util";
+import { SIGNUPS_API, PROXY_ORIGIN, ReqFunc, StateReporter, StringMap, GET_SIGNUP_API } from "./util";
 import { useState, useEffect } from "react";
 import JSZip from "jszip";
 import zones from './zones.json';
 import zipCacheRaw from '../zip_cache.csv?raw';
 
-const PROXY = 'https://thawing-lowlands-28251-6bae9d7d987a.herokuapp.com/';
 const ZIP_CODES_API = 'https://api.zip-codes.com/ZipCodesAPI.svc/1.0/QuickGetZipCodeDetails/';
 
 const lookupCounty = async (zip: string, zipcodesKey: string): Promise<string> => {
@@ -13,7 +12,7 @@ const lookupCounty = async (zip: string, zipcodesKey: string): Promise<string> =
     const cached = sessionStorage.getItem(cacheKey);
     if (cached) return cached;
 
-    const r = await fetch(`${PROXY}${ZIP_CODES_API}${zip}?key=${zipcodesKey}`, {
+    const r = await fetch(`${PROXY_ORIGIN}/${ZIP_CODES_API}${zip}?key=${zipcodesKey}`, {
         headers: new Headers({ 'Accept': 'application/json' })
     });
     if (!r.ok) throw new Error(`Zip codes API error for ${zip}: HTTP ${r.status}`);
