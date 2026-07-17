@@ -40,9 +40,9 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
     const pageSize = 100
 
     while (true) {
+        let url = `${NATIONBUILDER}/events?filter[start_at][gte]=${year}-01-01T00:00:00&filter[start_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[events]=venue_name,page_id&include=page&fields[pages]=slug,name`
         try {
-            console.log('events page', page);
-            let url = `${NATIONBUILDER}/events?filter[start_at][gte]=${year}-01-01T00:00:00&filter[start_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[events]=venue_name,page_id&include=page&fields[pages]=slug,name`
+            console.log('events page', year, url);
             const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
                 headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
             })
@@ -108,8 +108,8 @@ const fetchDonationStatsForYear = async (year: string, token: string): Promise<D
     const pageSize = 100
 
     while (true) {
+        let url = `${NATIONBUILDER}/donations?filter[status]=succeeded&filter[succeeded_at][gte]=${year}-01-01&filter[succeeded_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[donations]=amount_in_cents,signup_id`
         try {
-            let url = `${NATIONBUILDER}/donations?filter[status]=succeeded&filter[succeeded_at][gte]=${year}-01-01&filter[succeeded_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[donations]=amount_in_cents,signup_id`
             const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
                 headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
             })
