@@ -41,6 +41,7 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
 
     while (true) {
         try {
+            console.log('events page', page);
             const url = `${NATIONBUILDER}/events?filter[start_at][gte]=${year}-01-01T00:00:00&filter[start_at][lte]=${year}-12-31T23:59:59&page[number]=${page}&page[size]=${pageSize}&fields[events]=venue_name,page_id&include=page&fields[pages]=slug,name`
             const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
                 headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
@@ -81,8 +82,11 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
                 const callMatch = slug.match(/^([^_]+)_call_/)
                 if (callMatch) stats.chapterPrefixes.add(callMatch[1].toLowerCase())
             })
+            console.log('chapters', stats.chapterPrefixes)
+
 
             const nextPage = json?.meta?.pagination?.next_page
+            console.log(nextPage, data.length, pageSize);
             if (!nextPage || data.length < pageSize) break
             page = nextPage
         } catch {
