@@ -4,7 +4,8 @@
       "WebFetch(domain:www.zip-codes.com)",
       "Bash(npm run:*)",
       "Bash(gh pr:*)",
-      "Bash(gh issue *)"
+      "Bash(gh issue *)",
+      "Skill(update-config)"
     ]
   }
 }
