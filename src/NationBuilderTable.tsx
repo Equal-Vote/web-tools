@@ -77,7 +77,10 @@ const fetchEventStatsForYear = async (year: string, token: string, validPageIds:
     const stats: EventStats = { total: 0, inPerson: 0, virtual: 0, orientations: 0, chapterPrefixes: new Set() }
     const pageSize = 100
 
+    if(parseInt(year) < 2024) return null;
+
     let url = `${NATIONBUILDER}/events?filter[start_at][gte]=${year}-01-01T00:00:00&filter[start_at][lte]=${year}-12-31T23:59:59&page[size]=${pageSize}&fields[events]=venue_name,page_id,start_at&include=page&fields[pages]=slug,name`
+
     console.log('events page', year);
     while (true) {
         try {
@@ -119,7 +122,7 @@ const fetchEventStatsForYear = async (year: string, token: string, validPageIds:
 
                 console.log(year, slug, title, start_at)
 
-                if (/orientation/i.test(slug) || /orientation/i.test(title)) {
+                if (/orientation/i.test(slug) || /orientation/i.test(title) || /101/i.test(slug) || /101/i.test(title)) {
                     stats.orientations++
                 }
 
