@@ -10,6 +10,11 @@ const YEARS = Array.from(
   (_, i) => String(years_from + i)
 );
 
+// Page ID for https://starvoting.org/events — only events whose page is a
+// direct child of this page (per the NationBuilder v2 pages `parent_id`
+// attribute) should be counted as real events.
+const EVENTS_PARENT_PAGE_ID = '1477'
+
 type Props = {
     getValidAccessToken: () => Promise<string | null>
 }
@@ -31,6 +36,35 @@ const fetchSignupCount = async (year: string, token: string): Promise<number | n
     }
 }
 
+const fetchEventPageIds = async (token: string): Promise<Set<string>> => {
+    const pageIds = new Set<string>()
+    const pageSize = 100
+
+    let url = `${NATIONBUILDER}/pages?filter[parent_id]=${EVENTS_PARENT_PAGE_ID}&page[size]=${pageSize}&fields[pages]=parent_id`
+    while (true) {
+        try {
+            const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
+                headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            })
+            if (!res.ok){
+                console.log('pages failed', res, await res.json())
+                break
+            }
+            const json = await res.json()
+            const data: any[] = json?.data ?? []
+            data.forEach(page => pageIds.add(String(page.id)))
+
+            if(data.length == 0) break;
+            url = NATIONBUILDER_BASE+json.links?.next;
+        } catch {
+            break
+        }
+    }
+
+    console.log('event page ids (children of page', EVENTS_PARENT_PAGE_ID, ')', pageIds)
+    return pageIds
+}
+
  type EventStats = {
      total: number
      inPerson: number
@@ -39,7 +73,7 @@ const fetchSignupCount = async (year: string, token: string): Promise<number | n
      chapterPrefixes: Set<string>
  }
 
-const fetchEventStatsForYear = async (year: string, token: string): Promise<EventStats | null> => {
+const fetchEventStatsForYear = async (year: string, token: string, validPageIds: Set<string>): Promise<EventStats | null> => {
     const stats: EventStats = { total: 0, inPerson: 0, virtual: 0, orientations: 0, chapterPrefixes: new Set() }
     const pageSize = 100
 
@@ -65,6 +99,10 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
 
             data.forEach(event => {
                 const attrs = event?.attributes ?? {}
+
+                const pageId = attrs.page_id ?? event?.relationships?.page?.data?.id
+                if (pageId == null || !validPageIds.has(String(pageId))) return
+
                 stats.total++
 
                 const venueName: string | null = attrs.venue_name ?? null
@@ -74,8 +112,7 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
                     stats.virtual++
                 }
 
-                const pageId = attrs.page_id ?? event?.relationships?.page?.data?.id
-                const pageAttrs = pageId != null ? pageMap.get(String(pageId)) ?? {} : {}
+                const pageAttrs = pageMap.get(String(pageId)) ?? {}
                 const slug = pageAttrs.slug ?? ''
                 const title = pageAttrs.name ?? ''
                 const start_at = pageAttrs.start_at ?? ''
@@ -152,10 +189,12 @@ export const NationBuilderTable = ({ getValidAccessToken }: Props) => {
             const token = await getValidAccessToken()
             if (!token) return
 
+            const validPageIds = await fetchEventPageIds(token)
+
             const [signupCounts, donationResults, eventResults] = await Promise.all([
                 Promise.all(YEARS.map(year => fetchSignupCount(year, token))),
                 Promise.all(YEARS.map(year => fetchDonationStatsForYear(year, token))),
-                Promise.all(YEARS.map(year => fetchEventStatsForYear(year, token))),
+                Promise.all(YEARS.map(year => fetchEventStatsForYear(year, token, validPageIds))),
             ])
 
             const signupValues: Record<string, number> = {}

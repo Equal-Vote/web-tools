@@ -5,7 +5,9 @@
       "Bash(npm run:*)",
       "Bash(gh pr:*)",
       "Bash(gh issue *)",
-      "Skill(update-config)"
+      "Skill(update-config)",
+      "WebFetch(domain:nationbuilder.com)",
+      "WebSearch"
     ]
   }
 }
