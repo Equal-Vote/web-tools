@@ -166,13 +166,13 @@ const fetchDonationStatsForYear = async (year: string, token: string): Promise<D
 
             data.forEach(donation => {
                 const attrs = donation?.attributes ?? {}
+                console.log('donation', year, attrs.email, attrs.succeeded_at, attrs.amount_in_cents)
                 stats.donations++
                 const signupId = attrs.signup_id ?? donation?.relationships?.signup?.data?.id
                 if (signupId != null) stats.donors.add(String(signupId))
                 const cents = attrs.amount_in_cents
                 if (typeof cents === 'number') stats.fundsRaisedCents += cents
             })
-
 
             if(data.length == 0) break;
             url = NATIONBUILDER_BASE+json.links?.next;
