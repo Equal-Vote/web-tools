@@ -9,7 +9,6 @@ const YEARS = Array.from(
   { length: years_to - years_from + 1 },
   (_, i) => String(years_from + i)
 );
-console.log("YEARS", YEARS)
 
 type Props = {
     getValidAccessToken: () => Promise<string | null>
@@ -45,9 +44,9 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
     const pageSize = 100
 
     let url = `${NATIONBUILDER}/events?filter[start_at][gte]=${year}-01-01T00:00:00&filter[start_at][lte]=${year}-12-31T23:59:59&page[size]=${pageSize}&fields[events]=venue_name,page_id,start_at&include=page&fields[pages]=slug,name`
+    console.log('events page', year);
     while (true) {
         try {
-            console.log('events page', year, url);
             const res = await fetch(`${PROXY_ORIGIN}/${url}`, {
                 headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
             })
@@ -81,7 +80,7 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
                 const title = pageAttrs.name ?? ''
                 const start_at = pageAttrs.start_at ?? ''
 
-                console.log(slug, title, start_at)
+                console.log(year, slug, title, start_at)
 
                 if (/orientation/i.test(slug) || /orientation/i.test(title)) {
                     stats.orientations++
@@ -90,17 +89,15 @@ const fetchEventStatsForYear = async (year: string, token: string): Promise<Even
                 const callMatch = slug.match(/^([^_]+)_call_/)
                 if (callMatch) stats.chapterPrefixes.add(callMatch[1].toLowerCase())
             })
-            console.log('chapters', stats.chapterPrefixes)
 
             if(data.length == 0) break;
-            console.log('before', url)
             url = NATIONBUILDER_BASE+json.links?.next;
-            console.log('after', url)
         } catch {
             return null
         }
     }
 
+    console.log('chapters', year, stats.chapterPrefixes)
     return stats
 }
 
