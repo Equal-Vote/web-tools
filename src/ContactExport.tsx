@@ -177,10 +177,11 @@ export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter,
 
         state.pending(`Found ${uncachedZips.length} zips required an API call`)
 
-        if (uncachedZips.length > 250) {
-            state.error(`Too many uncached zip lookups required (${uncachedZips.length}), limit is 250`);
-            return;
-        }
+        // When we exceed this I think the gameplan is to just disable it and then run it a fewtimes knowing we'll hit the limit?
+        //if (uncachedZips.length > 250) {
+        //    state.error(`Too many uncached zip lookups required (${uncachedZips.length}), limit is 250`);
+        //    return;
+        //}
 
         if (uncachedZips.length > 0 && !zipcodesKey) {
             state.error(`ZIP Codes API key required for ${uncachedZips.length} uncached zip codes`);
