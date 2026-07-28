@@ -175,13 +175,7 @@ export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter,
 
         const uncachedZips = [...candidateZips].filter(zip => !!sessionStorage.getItem(`zip_county_${zip}`));
 
-        state.pending(`Found ${uncachedZips.length} zips required an API call`)
-
-        // When we exceed this I think the gameplan is to just disable it and then run it a fewtimes knowing we'll hit the limit?
-        //if (uncachedZips.length > 250) {
-        //    state.error(`Too many uncached zip lookups required (${uncachedZips.length}), limit is 250`);
-        //    return;
-        //}
+        state.pending(`Found ${uncachedZips.length} zips required an API call (NOTE: rate limit may occur above 250)`)
 
         if (uncachedZips.length > 0 && !zipcodesKey) {
             state.error(`ZIP Codes API key required for ${uncachedZips.length} uncached zip codes`);
@@ -231,6 +225,7 @@ export default ({req, state, zipcodesKey} : {req: ReqFunc, state: StateReporter,
         zipped('georgia_contacts.csv', items.filter(item => item.state == 'GA'));
         zipped('utah_contacts.csv', items.filter(item => item.state == 'UT'));
         zipped('new_york_contacts.csv', items.filter(item => item.state == 'NY'));
+        zipped('vermont_contacts.csv', items.filter(item => item.state == 'VT'));
         Object.entries(metroContacts).forEach(([zoneName, contacts]) => {
             zipped(`${zoneName}_contacts.csv`, contacts);
         });
