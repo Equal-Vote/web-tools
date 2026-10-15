@@ -7,7 +7,7 @@ import { PROXY_ORIGIN } from "./util";
 export default () => {
     const [params] = useSearchParams();
     const { data, isPending, makeRequest: fetchEvents } = useFetch(
-        `${PROXY_ORIGIN}/https://starvoting.org/events`,
+        `${PROXY_ORIGIN}/https://equal.vote/events`,
         'get',
     )
 
