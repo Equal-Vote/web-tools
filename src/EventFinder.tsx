@@ -19,7 +19,7 @@ export default () => {
     }else{
         let arr = data?.match(`"(/${params.get('prefix')}[^"]*)"`) ?? []
         if(arr[1]){
-            window.location.href = `https://starvoting.org${arr[1]}`;
+            window.location.href = `https://equal.vote{arr[1]}`;
             return <></>
         }else{
             return <Typography>Failed to process {JSON.stringify(arr)}</Typography>
